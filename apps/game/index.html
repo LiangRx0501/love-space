@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>星际大冒险</title>
+    <link
+        href="https://fonts.loli.net/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .back-home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 44px;
+            height: 44px;
+            background: rgba(0, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0ff;
+            text-decoration: none;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .back-home-btn:hover {
+            background: rgba(0, 255, 255, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        #game-canvas {
+            max-width: 100vw;
+            max-height: 100vh;
+            touch-action: none;
+        }
+
+        #ult-btn {
+            display: none;
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #ffd700);
+            border: 3px solid rgba(255, 215, 0, 0.6);
+            color: #fff;
+            font-size: 1.6rem;
+            font-weight: 900;
+            z-index: 200;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            transition: all 0.2s;
+        }
+
+        #ult-btn:active {
+            transform: scale(0.9);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            #ult-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .instructions {
+                display: none !important;
+            }
+
+            .touch-instructions {
+                display: flex !important;
+            }
+        }
+
+        .touch-instructions {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+        }
+
+        .touch-instructions .touch-icon {
+            font-size: 2rem;
+            margin-bottom: 0.3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../../" class="back-home-btn" title="返回主页">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+    </a>
+
+    <div id="game-container">
+        <div id="start-screen" class="screen">
+            <div class="stars"></div>
+            <div class="twinkling"></div>
+            <div class="content">
+                <h1 class="game-title">
+                    <span class="title-line">SPACE</span>
+                    <span class="title-line accent">FIGHTER</span>
+                </h1>
+                <p class="subtitle">星际大冒险</p>
+
+                <div class="instructions">
+                    <div class="instruction-item">
+                        <span class="key">← →</span>
+                        <span class="desc">移动</span>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="key">Q</span>
+                        <span class="desc">大招</span>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="key">ESC</span>
+                        <span class="desc">暂停</span>
+                    </div>
+                </div>
+
+                <div class="touch-instructions">
+                    <div class="touch-icon">👆</div>
+                    <div>拖动手指移动飞机</div>
+                    <div>自动发射子弹 · 右下角释放大招</div>
+                </div>
+
+                <button id="start-btn" class="neon-btn">
+                    <span>开始游戏</span>
+                    <div class="btn-glow"></div>
+                </button>
+            </div>
+        </div>
+
+        <div id="game-screen" class="screen hidden">
+            <canvas id="game-canvas"></canvas>
+
+            <div id="hud">
+                <div class="hud-item">
+                    <span class="hud-label">分数</span>
+                    <span id="score" class="hud-value">0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">关卡</span>
+                    <span id="level" class="hud-value">1</span>
+                </div>
+                <div class="hud-item lives-display">
+                    <span class="hud-label">生命</span>
+                    <div id="lives" class="lives-container">
+                        <span class="life-icon">❤️</span>
+                        <span class="life-icon">❤️</span>
+                        <span class="life-icon">❤️</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="pause-btn">⏸</button>
+            <div id="powerup-status" class="powerup-status"></div>
+            <button id="ult-btn" title="释放大招">⚡</button>
+        </div>
+
+        <div id="pause-screen" class="screen overlay hidden">
+            <div class="overlay-content">
+                <h2>暂停</h2>
+                <button id="resume-btn" class="neon-btn">
+                    <span>继续游戏</span>
+                </button>
+                <button id="restart-pause-btn" class="neon-btn secondary">
+                    <span>重新开始</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="gameover-screen" class="screen overlay hidden">
+            <div class="overlay-content">
+                <h2 class="gameover-title">游戏结束</h2>
+                <div class="final-score">
+                    <span class="label">最终得分</span>
+                    <span id="final-score" class="value">0</span>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">击败敌机</span>
+                        <span id="enemies-killed" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">达到关卡</span>
+                        <span id="final-level" class="stat-value">1</span>
+                    </div>
+                </div>
+                <button id="restart-btn" class="neon-btn">
+                    <span>再来一局</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Our Love Space</title>
+
+    <!-- 
+    📝 SQL 迁移文件已统一管理在 /sql/ 目录下:
+       001_init_tables.sql   - 核心表结构
+       002_user_credentials.sql - 密码登录 + 日程
+       003_fix_batch.sql     - 本次批量修复
+    -->
+
+    <script src="./apps/home/js/tailwind.js"></script>
+    <script defer src="./apps/home/js/three.min.js"></script>
+    <script defer src="./apps/home/js/supabase-js@2.js"></script>
+
+    <style>
+        /* 全局样式覆盖 - 使用本地字体 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+            overflow: hidden;
+            background: #000;
+            color: white;
+        }
+
+        /* Birthday Styles - 手写体使用 Dancing Script，更流畅圆润 */
+        .font-handwriting {
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .fade-out-up {
+            animation: fadeOutUp 0.8s forwards;
+        }
+
+        @keyframes fadeOutUp {
+            to {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+
+        /* =========================================
+           🎁 Super Soft Clay Gift Box (棉花糖版)
+           ========================================= */
+
+        /* 容器：添加漂浮动画 */
+        .gift-box-container {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            cursor: pointer;
+            margin: 0 auto;
+            /* 默认漂浮动画 */
+            animation: float-soft 3s ease-in-out infinite;
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* 悬停时稍微放大并兴奋颤抖 */
+        .gift-box-container:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        @keyframes float-soft {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* --- 1. 盒子主体 --- */
+        .gift-body {
+            width: 100%;
+            height: 85%;
+            background-color: #fbcfe8;
+            /* 柔和粉 */
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            border-radius: 20px;
+            /* 圆润边角 */
+            /* 核心：粘土质感的内阴影 */
+            box-shadow:
+                inset 8px 8px 16px rgba(255, 255, 255, 0.6),
+                /* 左上高光 */
+                inset -6px -6px 12px rgba(236, 72, 153, 0.2),
+                /* 右下阴影 */
+                0 20px 30px rgba(236, 72, 153, 0.3);
+            /* 外部投影 */
+            z-index: 10;
+            overflow: hidden;
+            /* 裁剪溢出的丝带 */
+        }
+
+        /* 盒子上的丝带 (身体部分) */
+        .ribbon-vertical {
+            position: absolute;
+            width: 36px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fef3c7;
+            /* 奶黄 */
+            box-shadow:
+                inset 2px 0 4px rgba(255, 255, 255, 0.8),
+                inset -2px 0 4px rgba(217, 119, 6, 0.1);
+        }
+
+        .ribbon-horizontal {
+            position: absolute;
+            height: 36px;
+            width: 100%;
+            top: 50%;
+            transform: translateY(-20%);
+            background-color: #fef3c7;
+            box-shadow:
+                inset 0 2px 4px rgba(255, 255, 255, 0.8),
+                inset 0 -2px 4px rgba(217, 119, 6, 0.1);
+        }
+
+        /* --- 2. 盖子 --- */
+        .gift-lid {
+            width: 110%;
+            /* 盖子比盒子大一圈 */
+            height: 25%;
+            background-color: #fbcfe8;
+            position: absolute;
+            top: 10%;
+            /* 稍微覆盖住盒子 */
+            left: -5%;
+            border-radius: 16px;
+            z-index: 20;
+            box-shadow:
+                inset 4px 4px 10px rgba(255, 255, 255, 0.6),
+                inset -4px -4px 10px rgba(236, 72, 153, 0.15),
+                0 6px 8px rgba(190, 24, 93, 0.15);
+            /* 盖子对盒子的投影 */
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        /* 盖子上的丝带 */
+        .ribbon-vertical-lid {
+            position: absolute;
+            width: 36px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fef3c7;
+            box-shadow: inset 2px 0 4px rgba(255, 255, 255, 0.8);
+        }
+
+        /* --- 3. 灵魂蝴蝶结 (重写结构) --- */
+        .gift-bow {
+            position: absolute;
+            width: 100px;
+            height: 60px;
+            top: -5%;
+            /* 定位在盖子上方 */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            transition: all 0.5s ease;
+        }
+
+        /* 蝴蝶结的两只耳朵 - 这里的形状决定了是否像姨妈巾 */
+        .bow-loop {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #fde047;
+            /* 亮黄 */
+            border-radius: 50% 50% 0 50%;
+            /* 水滴形状，关键！ */
+            top: 0;
+            /* 粘土质感 */
+            box-shadow:
+                inset 4px 4px 8px rgba(255, 255, 255, 0.8),
+                inset -2px -2px 6px rgba(217, 119, 6, 0.15),
+                0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .bow-left {
+            left: 0;
+            transform: rotate(30deg);
+            /* 旋转角度 */
+            transform-origin: bottom right;
+        }
+
+        .bow-right {
+            right: 0;
+            transform: rotate(-30deg) scaleX(-1);
+            /* 镜像翻转 */
+            transform-origin: bottom left;
+        }
+
+        /* 中间的圆结 */
+        .bow-center {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: #fcd34d;
+            border-radius: 50%;
+            top: 28px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow:
+                inset 3px 3px 6px rgba(255, 255, 255, 0.9),
+                inset -2px -2px 4px rgba(217, 119, 6, 0.2);
+            z-index: 2;
+        }
+
+        /* 下垂的飘带 */
+        .bow-ribbon-tail {
+            position: absolute;
+            width: 20px;
+            height: 45px;
+            background-color: #fde047;
+            top: 35px;
+            z-index: 0;
+            border-radius: 0 0 10px 10px;
+            box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.5);
+        }
+
+        .bow-tail-left {
+            left: 20px;
+            transform: rotate(15deg);
+        }
+
+        .bow-tail-right {
+            right: 20px;
+            transform: rotate(-15deg);
+        }
+
+        /* --- 4. 打开动画状态 --- */
+        /* 当 JS 添加 .gift-open 类时触发 */
+        .gift-box-container.gift-open .gift-lid {
+            transform: translateY(-120px) rotate(-10deg) scale(0.9);
+            opacity: 0;
+        }
+
+        .gift-box-container.gift-open .gift-bow {
+            transform: translate(-50%, -150px) rotate(45deg) scale(1.2);
+            opacity: 0;
+        }
+
+        .gift-box-container.gift-open .gift-body {
+            transform: scale(0.95);
+            filter: brightness(1.05);
+            transition: transform 0.3s;
+        }
+
+        /* Cake Styles (Enhanced) */
+        /* =========================================
+           🎂 Claymorphism Cake (粘土风格蛋糕)
+           ========================================= */
+        .cake-container {
+            position: relative;
+            width: 220px;
+            height: 160px;
+            margin-top: 40px;
+            animation: float-soft 3s ease-in-out infinite;
+        }
+
+        /* 蛋糕主体 - 粘土风格 */
+        .cake-body {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background-color: #fbcfe8;
+            /* Baby Pink */
+            border-radius: 20px;
+            /* 圆润边角 */
+            /* 粘土质感的内阴影 */
+            box-shadow:
+                inset 8px 8px 16px rgba(255, 255, 255, 0.6),
+                /* 左上高光 */
+                inset -6px -6px 12px rgba(236, 72, 153, 0.2),
+                /* 右下阴影 */
+                0 15px 25px rgba(236, 72, 153, 0.25);
+            /* 外部投影 */
+            z-index: 10;
+        }
+
+        /* 蛋糕顶层 - 粘土风格 */
+        .cake-top {
+            position: absolute;
+            top: 40px;
+            left: -5%;
+            width: 110%;
+            height: 25px;
+            background-color: #fce7f3;
+            /* 更浅的粉色 */
+            border-radius: 16px;
+            z-index: 12;
+            /* 粘土质感 */
+            box-shadow:
+                inset 4px 4px 10px rgba(255, 255, 255, 0.7),
+                inset -4px -4px 10px rgba(236, 72, 153, 0.15),
+                0 4px 8px rgba(190, 24, 93, 0.1);
+        }
+
+        /* 蛋糕分层线 */
+        .cake-layer-line {
+            position: absolute;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.4);
+            z-index: 11;
+            border-radius: 2px;
+        }
+
+        /* 水果装饰 - 粘土风格 */
+        .fruit {
+            position: absolute;
+            z-index: 15;
+        }
+
+        .strawberry {
+            width: 28px;
+            height: 32px;
+            background-color: #fb7185;
+            /* 柔和的红色 */
+            border-radius: 50% 50% 12% 12%;
+            top: 20px;
+            /* 粘土质感 */
+            box-shadow:
+                inset 3px 3px 6px rgba(255, 255, 255, 0.6),
+                inset -2px -2px 4px rgba(185, 28, 28, 0.2),
+                0 2px 6px rgba(251, 113, 133, 0.3);
+        }
+
+        .strawberry::after {
+            /* 叶子 */
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 6px;
+            width: 18px;
+            height: 10px;
+            background-color: #86efac;
+            /* 柔和的绿色 */
+            border-radius: 50%;
+            box-shadow:
+                inset 2px 2px 4px rgba(255, 255, 255, 0.5),
+                inset -1px -1px 2px rgba(22, 163, 74, 0.15);
+        }
+
+        .blueberry {
+            width: 18px;
+            height: 18px;
+            background-color: #93c5fd;
+            /* 柔和的蓝色 */
+            border-radius: 50%;
+            top: 35px;
+            /* 粘土质感 */
+            box-shadow:
+                inset 3px 3px 6px rgba(255, 255, 255, 0.6),
+                inset -2px -2px 4px rgba(30, 64, 175, 0.2),
+                0 2px 5px rgba(147, 197, 253, 0.3);
+        }
+
+        /* 蜡烛 - 粘土风格 */
+        .candle-fancy {
+            width: 14px;
+            height: 65px;
+            background-color: #fef3c7;
+            /* 奶油白 */
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 8px;
+            z-index: 20;
+            /* 粘土质感 */
+            box-shadow:
+                inset 3px 3px 6px rgba(255, 255, 255, 0.7),
+                inset -2px -2px 4px rgba(217, 119, 6, 0.15),
+                0 3px 8px rgba(254, 243, 199, 0.3);
+        }
+
+        /* 蜡烛条纹装饰 */
+        .candle-fancy::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(0deg,
+                    transparent 0px,
+                    transparent 8px,
+                    rgba(251, 191, 36, 0.3) 8px,
+                    rgba(251, 191, 36, 0.3) 12px);
+            border-radius: 8px;
+        }
+
+        /* 火焰 - 保持动态效果 */
+        .flame-fancy {
+            width: 18px;
+            height: 32px;
+            background: radial-gradient(ellipse at bottom,
+                    #fef08a 0%,
+                    #fbbf24 50%,
+                    #f97316 80%,
+                    transparent 100%);
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: flame-flicker 1.5s infinite alternate;
+            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
+        }
+
+        @keyframes flame-flicker {
+            0% {
+                transform: translateX(-50%) scale(1) rotate(-2deg);
+                opacity: 0.9;
+            }
+
+            100% {
+                transform: translateX(-50%) scale(1.1) rotate(2deg);
+                opacity: 1;
+                filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.8));
+            }
+        }
+
+        /* 盘子 - 粘土风格 */
+        .cake-container::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: -20px;
+            right: -20px;
+            height: 8px;
+            background-color: #fef3c7;
+            /* 奶油白 */
+            border-radius: 50%;
+            box-shadow:
+                inset 2px 2px 4px rgba(255, 255, 255, 0.6),
+                inset -2px -2px 4px rgba(217, 119, 6, 0.1),
+                0 2px 6px rgba(254, 243, 199, 0.2);
+            z-index: 5;
+        }
+
+        /* 吹蜡烛按钮 - 粘土风格 */
+        #blow-candle-btn {
+            cursor: pointer;
+        }
+
+        #blow-candle-btn:hover {
+            transform: scale(1.08) translateY(-2px);
+            box-shadow:
+                inset 4px 4px 10px rgba(255, 255, 255, 0.7),
+                inset -4px -4px 10px rgba(236, 72, 153, 0.25),
+                0 8px 16px rgba(251, 207, 232, 0.5);
+        }
+
+        #blow-candle-btn:active {
+            transform: scale(0.95) translateY(0);
+            transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow:
+                inset 4px 4px 10px rgba(255, 255, 255, 0.5),
+                inset -4px -4px 10px rgba(236, 72, 153, 0.3),
+                0 2px 6px rgba(251, 207, 232, 0.3);
+        }
+
+        /* 毛玻璃组件 */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* 输入框样式 */
+        .input-field {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 12px;
+            padding: 12px;
+            width: 100%;
+            outline: none;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #f472b6;
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 15px rgba(244, 114, 182, 0.3);
+        }
+
+        /* 按钮样式 */
+        .btn-primary {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 12px;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+            transition: transform 0.1s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+
+        /* 实用工具类 */
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 滚动条隐藏 */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        /* 震动动画 */
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .animate-shake {
+            animation: shake 0.3s ease-in-out;
+        }
+
+        /* 翻牌时钟样式 */
+        .flip-clock-container {
+            perspective: 1000px;
+        }
+
+        .flip-card {
+            position: relative;
+            display: inline-block;
+            width: 24px;
+            height: 36px;
+            background: #333;
+            border-radius: 4px;
+            color: #f472b6;
+            font-weight: bold;
+            text-align: center;
+            line-height: 36px;
+            font-size: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .flip-card::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .flip-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 2px;
+        }
+
+        .flip-label {
+            font-size: 10px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        /* 商店动态图标动画 */
+        @keyframes icon-heart-beat {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+        }
+
+        @keyframes icon-massage {
+
+            0%,
+            100% {
+                transform: rotate(-10deg);
+            }
+
+            50% {
+                transform: rotate(10deg);
+            }
+        }
+
+        @keyframes icon-drink {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes icon-ticket {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(-15deg);
+            }
+
+            75% {
+                transform: rotate(15deg);
+            }
+        }
+
+        @keyframes icon-crown {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 2px gold);
+            }
+
+            50% {
+                filter: drop-shadow(0 0 15px gold);
+                transform: scale(1.1);
+            }
+        }
+
+        .anim-heart-beat {
+            animation: icon-heart-beat 1.5s infinite ease-in-out;
+        }
+
+        .anim-massage {
+            animation: icon-massage 2s infinite ease-in-out;
+        }
+
+        .anim-drink {
+            animation: icon-drink 2s infinite ease-in-out;
+        }
+
+        .anim-ticket {
+            animation: icon-ticket 2s infinite ease-in-out;
+        }
+
+        .anim-crown {
+            animation: icon-crown 2s infinite ease-in-out;
+        }
+
+        @keyframes smoke-rise {
+            0% { opacity: 0.6; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-30px) scale(2); }
+        }
+
+        /* 选中态边框 */
+        .icon-selected {
+            border-color: #f472b6 !important;
+            background: rgba(244, 114, 182, 0.25) !important;
+            transform: scale(1.15);
+            box-shadow: 0 0 12px rgba(244, 114, 182, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- AI 聊天机器人入口按钮 -->
+    <a href="./apps/chat/" class="ai-chat-btn" title="和 Gogo 的小分身聊天" id="ai-chat-entry">
+        💬
+    </a>
+    <style>
+        .ai-chat-btn {
+            position: fixed;
+            bottom: 85px;
+            left: 16px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(236, 72, 153, 0.4));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            text-decoration: none;
+            z-index: 9999;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 12px rgba(139, 92, 246, 0.25);
+        }
+
+        .ai-chat-btn:active {
+            transform: scale(0.9);
+        }
+    </style>
+
+    <!-- BIRTHDAY OVERLAY (默认隐藏，由对话关键词触发) -->
+    <div id="birthday-app" class="absolute inset-0 z-[100] bg-black overflow-hidden flex flex-col hidden">
+
+        <!-- Fireworks/Background Layer -->
+        <canvas id="fireworks-canvas" class="absolute inset-0 pointer-events-none z-10"></canvas>
+
+        <!-- 1. Gift Section -->
+        <div id="bday-gift-section" class="flex-1 flex flex-col items-center justify-center relative z-20"
+            style="background: #fff1f2;">
+            <h1 class="text-3xl mb-12"
+                style="color: #be185d; font-family: inherit; font-weight: 700; text-shadow: 0 2px 8px rgba(190, 24, 93, 0.2);">
+                送给亲爱的Gigi 💝</h1>
+
+            <div id="gift-box-container" class="gift-box-container" onclick="window.birthdayApp.openGift()">
+
+                <div class="gift-body">
+                    <div class="ribbon-vertical"></div>
+                    <div class="ribbon-horizontal"></div>
+                </div>
+
+                <div class="gift-lid">
+                    <div class="ribbon-vertical-lid"></div>
+                </div>
+
+                <div class="gift-bow">
+                    <div class="bow-loop bow-left"></div>
+                    <div class="bow-loop bow-right"></div>
+                    <div class="bow-center"></div>
+                    <div class="bow-ribbon-tail bow-tail-left"></div>
+                    <div class="bow-ribbon-tail bow-tail-right"></div>
+                </div>
+
+            </div>
+
+            <p class="mt-12 text-sm animate-pulse"
+                style="color: #7c2d12; font-family: inherit; font-weight: 600; font-size: 1.1em;">
+                点击打开惊喜</p>
+        </div>
+
+        <!-- 2. Cake Section (Initially Hidden) -->
+        <div id="bday-cake-section" class="flex-1 flex flex-col items-center justify-center relative z-20 hidden"
+            style="background: #fff1f2;">
+            <div class="cake-container">
+                <!-- Toppings -->
+                <div class="fruit strawberry" style="left: 30px; transform: rotate(-15deg);"></div>
+                <div class="fruit strawberry" style="right: 30px; transform: rotate(15deg);"></div>
+                <div class="fruit blueberry" style="left: 70px;"></div>
+                <div class="fruit blueberry" style="right: 70px;"></div>
+                <div class="fruit strawberry" style="left: 50%; transform: translateX(-50%) translateY(-10px);"></div>
+
+                <!-- Candle -->
+                <div class="candle-fancy">
+                    <div class="flame-fancy"></div>
+                    <div id="candle-smoke" class="hidden" style="position:absolute;top:-30px;left:50%;transform:translateX(-50%);width:6px;height:20px;background:linear-gradient(to top, rgba(180,180,180,0.6), transparent);border-radius:50%;filter:blur(3px);animation:smoke-rise 1.5s ease-out;"></div>
+                </div>
+
+                <!-- Cake Body -->
+                <div class="cake-top"></div>
+                <div class="cake-body"></div>
+                <div class="cake-layer-line"></div>
+            </div>
+
+            <h2 id="cake-msg" class="text-3xl mt-12"
+                style="color: #be185d; font-family: inherit; font-weight: 700; text-shadow: 0 2px 8px rgba(190, 24, 93, 0.2);">
+                宝宝请许愿✨</h2>
+
+            <button id="blow-candle-btn" class="mt-8 px-10 py-4 rounded-full font-bold transition-all duration-300"
+                style="background-color: #fbcfe8; color: #7c2d12; font-family: inherit; font-size: 1.2em; font-weight: 600; box-shadow: inset 4px 4px 10px rgba(255, 255, 255, 0.6), inset -4px -4px 10px rgba(236, 72, 153, 0.2), 0 6px 12px rgba(251, 207, 232, 0.4);">
+                🌬️ 吹蜡烛
+            </button>
+        </div>
+
+        <!-- 3. Photo Gallery (Initially Hidden) -->
+        <div id="bday-gallery-section" class="flex-1 relative z-30 hidden overflow-y-auto w-full h-full">
+            <div class="p-6 pb-32">
+                <h2 class="text-3xl text-center mb-8 text-pink-300 mt-10">Happy Birthday!</h2>
+
+                <!-- Single Column Layout -->
+                <div id="photo-wall" class="flex flex-col items-center gap-8 pb-32">
+                    <!-- Photos injected by JS -->
+                </div>
+
+                <div class="text-center mt-12 text-gray-500 text-xs pb-10">
+                    <p>To be Continue ❤️ </p>
+                    <button
+                        onclick="document.getElementById('birthday-app').classList.add('hidden'); document.getElementById('page-auth').classList.remove('hidden');"
+                        class="mt-8 text-gray-700 underline">进入 Love Space</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="canvas-container" class="absolute inset-0 z-0"></div>
+
+    <!-- Loading -->
+    <div id="loading-overlay"
+        class="absolute inset-0 z-50 bg-black flex items-center justify-center transition-opacity duration-500">
+        <div class="text-center">
+            <div class="text-4xl animate-bounce mb-4">🪐</div>
+            <p class="text-pink-300 text-sm tracking-widest">CONNECTING UNIVERSE...</p>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div id="page-auth" class="relative z-10 flex flex-col items-center justify-center h-screen w-full px-6 hidden">
+        <div class="glass p-8 rounded-3xl w-full max-w-sm fade-in relative">
+            <h1 class="text-3xl text-pink-300 mb-2 text-center tracking-widest">Love Space</h1>
+            <p class="text-xs text-gray-400 mb-4 text-center">Since 2025.05.22</p>
+
+            <div class="flex bg-black/30 p-1 rounded-xl mb-6">
+                <button id="login-mode-password" onclick="window.app.switchLoginMode('password')"
+                    class="flex-1 px-3 py-2 rounded-lg text-xs bg-pink-500 text-white transition-all">账号密码</button>
+                <button id="login-mode-email" onclick="window.app.switchLoginMode('email')"
+                    class="flex-1 px-3 py-2 rounded-lg text-xs text-gray-400 transition-all">邮箱验证码</button>
+            </div>
+
+            <div id="login-password-group" class="space-y-4">
+                <input type="text" id="input-username" placeholder="账号" class="input-field">
+                <input type="password" id="input-password" placeholder="密码" class="input-field">
+                <button onclick="window.app.loginWithPassword()" class="btn-primary">登录</button>
+            </div>
+
+            <div id="login-email-group" class="hidden">
+                <div id="step-email" class="space-y-4">
+                    <input type="email" id="input-email" placeholder="输入你的 QQ 邮箱" class="input-field">
+                    <button onclick="window.app.sendMagicCode(event)" class="btn-primary">获取通行证 (验证码)</button>
+                </div>
+
+                <div id="step-otp" class="space-y-4 hidden">
+                    <p class="text-xs text-center text-gray-300">验证码已发送，请查看邮件 💌</p>
+                    <input type="text" id="input-otp" placeholder="8位数字验证码" class="input-field tracking-[0.5em] text-xl">
+                    <button onclick="window.app.verifyCode()" class="btn-primary">解锁星球</button>
+                </div>
+
+                <div id="step-profile" class="space-y-4 hidden">
+                    <p class="text-sm text-center text-gray-300">初次见面，怎么称呼你？</p>
+                    <input type="text" id="input-nickname" placeholder="例如：Gigi / 臭居居" class="input-field">
+                    <button onclick="window.app.saveProfile()" class="btn-primary">亲一大口</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Page -->
+    <div id="page-main" class="relative z-10 h-screen w-full flex flex-col hidden fade-in">
+
+        <!-- Header -->
+        <div class="z-20 flex-none" style="padding-top: env(safe-area-inset-top, 0px);">
+            <div class="glass rounded-b-3xl shadow-lg px-4 pb-3 pt-3">
+                <!-- Row 1: Anniversary -->
+                <div class="text-center mb-2.5">
+                    <div class="text-[11px] text-gray-400 tracking-wider mb-1">我们已经在一起</div>
+                    <div class="flex items-center justify-center gap-1.5">
+                        <span id="timer-days" class="text-3xl text-pink-400 font-bold leading-none">0</span>
+                        <span class="text-xs text-white/60 self-end mb-0.5">天</span>
+                        <div class="flex items-center flip-clock-container ml-1" id="flip-clock">
+                            <div class="flip-unit">
+                                <div class="flex">
+                                    <div class="flip-card" id="hour-tens">0</div>
+                                    <div class="flip-card" id="hour-ones">0</div>
+                                </div>
+                                <span class="flip-label">时</span>
+                            </div>
+                            <span class="text-pink-400 font-bold mx-0.5 self-start mt-0.5 text-sm">:</span>
+                            <div class="flip-unit">
+                                <div class="flex">
+                                    <div class="flip-card" id="min-tens">0</div>
+                                    <div class="flip-card" id="min-ones">0</div>
+                                </div>
+                                <span class="flip-label">分</span>
+                            </div>
+                            <span class="text-pink-400 font-bold mx-0.5 self-start mt-0.5 text-sm">:</span>
+                            <div class="flip-unit">
+                                <div class="flex">
+                                    <div class="flip-card" id="sec-tens">0</div>
+                                    <div class="flip-card" id="sec-ones">0</div>
+                                </div>
+                                <span class="flip-label">秒</span>
+                            </div>
+                        </div>
+                        <span class="text-xs text-white/60 self-end mb-0.5">啦</span>
+                    </div>
+                </div>
+                <!-- Row 2: Tabs + Logout -->
+                <div class="flex items-center gap-2">
+                    <div class="flex bg-black/30 p-1 rounded-xl justify-center flex-1">
+                        <button onclick="window.app.switchTab('timeline')" id="tab-btn-timeline"
+                            class="flex-1 py-1.5 rounded-lg text-xs bg-pink-500 text-white shadow transition-all text-center">时光</button>
+                        <button onclick="window.app.switchTab('calendar-grid')" id="tab-btn-calendar-grid"
+                            class="flex-1 py-1.5 rounded-lg text-xs text-gray-400 transition-all text-center">月历</button>
+                        <button onclick="window.app.switchTab('store')" id="tab-btn-store"
+                            class="flex-1 py-1.5 rounded-lg text-xs text-gray-400 transition-all text-center">商店</button>
+                    </div>
+                    <button onclick="window.app.logout()" title="退出登录"
+                        class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition flex-none text-sm">
+                        ⏻
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. Timeline View (原列表视图) -->
+        <div id="view-timeline" class="flex-1 overflow-y-auto p-4 pb-32 space-y-4 scroll-smooth">
+            <!-- Check-in Card -->
+            <div id="checkin-box"
+                class="hidden glass p-4 rounded-2xl flex justify-between items-center bg-gradient-to-r from-pink-500/20 to-purple-500/20 border-pink-400/30 transform hover:scale-[1.02] transition-transform">
+                <div>
+                    <h3 class="text-lg text-pink-200">✨ 今日签到</h3>
+                    <p class="text-xs text-gray-400">点亮今天，积分+10</p>
+                </div>
+                <button onclick="window.app.doCheckIn()"
+                    class="bg-pink-500 text-white px-4 py-2 rounded-xl text-sm shadow hover:scale-105 transition">签到</button>
+            </div>
+
+            <!-- Events List -->
+            <div id="events-container" class="space-y-4">
+                <!-- Events will be loaded here -->
+            </div>
+        </div>
+
+        <!-- 2. Calendar Grid View (月历视图) -->
+        <div id="view-calendar-grid" class="flex-1 overflow-y-auto p-4 pb-32 hidden">
+            <div class="glass rounded-2xl p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <button onclick="window.app.changeMonth(-1)" class="text-pink-300 hover:text-white">&lt;</button>
+                    <span id="calendar-month-title" class="font-bold text-lg">2025年2月</span>
+                    <button onclick="window.app.changeMonth(1)" class="text-pink-300 hover:text-white">&gt;</button>
+                </div>
+                <div class="grid grid-cols-7 gap-2 text-center text-xs text-gray-400 mb-2">
+                    <div>日</div>
+                    <div>一</div>
+                    <div>二</div>
+                    <div>三</div>
+                    <div>四</div>
+                    <div>五</div>
+                    <div>六</div>
+                </div>
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2 text-center">
+                    <!-- Grid Items will be injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Store View (商店视图) -->
+        <div id="view-store" class="flex-1 overflow-y-auto p-4 pb-24 space-y-6 hidden">
+            <!-- Inventory Section -->
+            <section>
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-gray-300 text-xs uppercase tracking-wider">🎒 我的背包</h3>
+                    <div id="user-points" class="text-yellow-400 font-bold text-sm">💰 0</div>
+                </div>
+                <div id="inventory-items" class="grid grid-cols-1 gap-2">
+                    <!-- Inventory items -->
+                </div>
+            </section>
+
+            <!-- Store Section -->
+            <section>
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-gray-300 text-xs uppercase tracking-wider">🛍️ 兑换好物</h3>
+                    <div class="flex gap-2 text-xs">
+                        <button onclick="window.app.switchStoreTab('gigi')" id="store-tab-gigi"
+                            class="text-pink-300 font-bold border-b-2 border-pink-400">Gigi的小店</button>
+                        <button onclick="window.app.switchStoreTab('gogo')" id="store-tab-gogo"
+                            class="text-gray-500">Gogo的小店</button>
+                    </div>
+                </div>
+
+                <!-- Add Item Button -->
+                <button onclick="window.app.openAddItemModal()"
+                    class="w-full mb-4 glass py-3 rounded-xl text-pink-300 text-sm font-bold border border-dashed border-pink-500/30 hover:bg-pink-500/10 transition flex items-center justify-center gap-2">
+                    <span>➕</span> 上架新商品
+                </button>
+
+                <div id="store-items" class="grid grid-cols-2 gap-3">
+                    <!-- Store items -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer / Input (支持 pb-safe) -->
+        <div class="absolute bottom-0 left-0 right-0 z-30 pb-safe glass border-t border-white/10">
+            <div class="p-4 pt-2 relative">
+                <!-- Mood Panel (Popup) -->
+                <div id="mood-panel"
+                    class="hidden absolute bottom-full right-4 mb-2 glass p-3 rounded-xl flex gap-3 fade-in">
+                    <button onclick="window.app.sendSOS('angry')" class="text-2xl hover:scale-125 transition"
+                        title="生气/炸毛">😡</button>
+                    <button onclick="window.app.sendSOS('sad')" class="text-2xl hover:scale-125 transition"
+                        title="难过/委屈">😭</button>
+                    <button onclick="window.app.sendSOS('sos')" class="text-2xl hover:scale-125 transition"
+                        title="紧急求救">🆘</button>
+                </div>
+
+                <div id="quote-bar" class="hidden flex items-center gap-2 bg-pink-500/10 border-l-4 border-pink-400 rounded-lg px-3 py-1.5 mb-1">
+                    <span id="quote-text" class="flex-1 text-xs text-pink-200 truncate"></span>
+                    <button onclick="window.app.clearQuote()" class="text-gray-400 hover:text-white text-sm">✕</button>
+                </div>
+
+                <div class="flex gap-2 items-center">
+                    <button onclick="window.app.toggleMoodPanel()"
+                        class="text-gray-400 hover:text-pink-400 transition px-1">
+                        😤
+                    </button>
+                    <input id="new-diary" type="text" placeholder="记录此刻的心情..."
+                        class="flex-1 bg-black/30 border border-white/10 text-white placeholder-gray-500 outline-none text-sm p-3 rounded-xl focus:border-pink-400 transition-colors">
+                    <button onclick="window.app.sendDiary()"
+                        class="bg-pink-500 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition flex-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: 日期详情 (Bottom Sheet style) -->
+    <div id="date-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="window.app.closeDateModal()"></div>
+        <div class="absolute bottom-0 left-0 right-0 glass rounded-t-3xl p-5 pb-safe animate-[fadeIn_0.3s_ease-out]">
+            <div class="w-12 h-1 bg-gray-500/50 rounded-full mx-auto mb-3"></div>
+            <h3 id="modal-date-title" class="text-lg font-bold text-pink-300 mb-3 text-center"></h3>
+
+            <div id="modal-events-list" class="max-h-[40vh] overflow-y-auto space-y-2 mb-3">
+            </div>
+
+            <!-- 添加日程按钮 -->
+            <button id="schedule-add-btn" onclick="window.app.toggleScheduleForm()"
+                class="w-full py-2.5 rounded-xl border border-dashed border-pink-500/30 text-pink-300 text-sm hover:bg-pink-500/10 transition mb-3">
+                ➕ 添加日程
+            </button>
+
+            <!-- 添加日程表单 -->
+            <div id="schedule-add-form" class="hidden space-y-3 mb-3 p-3 rounded-xl bg-white/5 border border-white/10">
+                <input id="schedule-title" type="text" placeholder="日程内容..."
+                    class="w-full bg-black/30 border border-white/10 text-white placeholder-gray-500 outline-none text-sm p-2.5 rounded-xl focus:border-pink-400 transition">
+                <div class="flex gap-2">
+                    <select id="schedule-label"
+                        class="flex-1 bg-black/30 border border-white/10 text-white text-sm p-2.5 rounded-xl outline-none">
+                        <option value="date">💕 约会</option>
+                        <option value="anniversary">💛 纪念日</option>
+                        <option value="todo">📋 待办</option>
+                        <option value="reminder">🔔 提醒</option>
+                    </select>
+                    <button onclick="window.app.addSchedule()"
+                        class="px-5 py-2.5 rounded-xl bg-pink-500 text-white text-sm font-bold shadow active:scale-95 transition">
+                        添加
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button onclick="window.app.closeDateModal()" class="text-gray-400 text-sm hover:text-white">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: 上架商品 (Merchant Configurator) -->
+    <div id="add-item-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="window.app.closeAddItemModal()"></div>
+        <div
+            class="absolute bottom-0 left-0 right-0 glass rounded-t-3xl p-6 pb-safe animate-[fadeIn_0.3s_ease-out] max-h-[85vh] overflow-y-auto">
+            <div class="w-12 h-1 bg-gray-500/50 rounded-full mx-auto mb-4"></div>
+            <h3 class="text-xl font-bold text-white mb-6 text-center">✨ 上架你的心意</h3>
+
+            <div class="space-y-6">
+                <!-- 1. Icon Selector -->
+                <div>
+                    <label class="text-xs text-gray-400 mb-2 block">选择动态图标</label>
+                    <div class="grid grid-cols-5 gap-2" id="icon-selector">
+                        <div onclick="window.app.selectIcon('heart-beat')"
+                            class="icon-option icon-selected aspect-square rounded-xl bg-white/5 flex items-center justify-center text-2xl border border-transparent cursor-pointer transition"
+                            data-value="heart-beat">❤️</div>
+                        <div onclick="window.app.selectIcon('massage')"
+                            class="icon-option aspect-square rounded-xl bg-white/5 flex items-center justify-center text-2xl border border-transparent cursor-pointer transition"
+                            data-value="massage">💆</div>
+                        <div onclick="window.app.selectIcon('drink')"
+                            class="icon-option aspect-square rounded-xl bg-white/5 flex items-center justify-center text-2xl border border-transparent cursor-pointer transition"
+                            data-value="drink">🥤</div>
+                        <div onclick="window.app.selectIcon('ticket')"
+                            class="icon-option aspect-square rounded-xl bg-white/5 flex items-center justify-center text-2xl border border-transparent cursor-pointer transition"
+                            data-value="ticket">🎫</div>
+                        <div onclick="window.app.selectIcon('crown')"
+                            class="icon-option aspect-square rounded-xl bg-white/5 flex items-center justify-center text-2xl border border-transparent cursor-pointer transition"
+                            data-value="crown">👑</div>
+                    </div>
+                    <input type="hidden" id="new-item-icon" value="heart-beat">
+                </div>
+
+                <!-- 2. Title Input -->
+                <div>
+                    <label class="text-xs text-gray-400 mb-2 block">商品名称</label>
+                    <input type="text" id="new-item-title" placeholder="例如：按摩券 / 亲亲 / 奶茶"
+                        class="w-full bg-black/30 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-pink-500 transition">
+                </div>
+
+                <!-- 3. Price Input -->
+                <div>
+                    <label class="text-xs text-gray-400 mb-2 block">价格 (积分)</label>
+                    <div class="flex items-center gap-4">
+                        <input type="range" id="new-item-price-range" min="10" max="500" step="10" value="50"
+                            class="flex-1 accent-pink-500"
+                            oninput="document.getElementById('price-display').innerText = this.value">
+                        <span class="text-xl font-bold text-yellow-400 w-16 text-right">💰 <span
+                                id="price-display">50</span></span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="pt-4 flex gap-3">
+                    <button onclick="window.app.closeAddItemModal()"
+                        class="flex-1 py-3 rounded-xl bg-white/10 text-gray-300 font-bold">取消</button>
+                    <button onclick="window.app.saveNewItem()"
+                        class="flex-1 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold shadow-lg shadow-pink-500/30">立即上架</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入主程序 (Module) -->
+    <script type="module" src="./apps/home/js/main.js"></script>
+    <script src="./apps/home/js/birthday.js"></script>
+</body>
+
+</html>

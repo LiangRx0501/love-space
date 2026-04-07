@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Gogo的小分身 </title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.loli.net/css2?family=ZCOOL+XiaoWei&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+</head>
+
+<body>
+    <!-- 返回恋爱空间按钮 -->
+    <a href="../home/" class="back-home-btn" title="返回恋爱空间">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+    </a>
+    <style>
+        .back-home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 107, 157, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff6b9d;
+            text-decoration: none;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .back-home-btn:hover {
+            background: rgba(255, 107, 157, 0.4);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.4);
+        }
+    </style>
+
+    <div class="background-animation"></div>
+
+    <div class="chat-container">
+        <header class="chat-header">
+            <div class="avatar user-avatar">
+                <span class="avatar-emoji">🧑</span>
+            </div>
+            <div class="header-info">
+                <h1>Gogo的小居米 </h1>
+                <span class="status">在线中...</span>
+            </div>
+            <div class="avatar girl-avatar">
+                <span class="avatar-emoji">👩</span>
+            </div>
+        </header>
+
+        <div class="chat-messages" id="chat-messages">
+            <div class="message system-message">
+                <p> 欢迎来到Gogo的小居米 </p>
+                <span class="time">刚刚</span>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-wrapper">
+                <input type="text" id="message-input" placeholder="输入你想说的话..." autocomplete="off">
+                <button id="send-btn" class="send-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
