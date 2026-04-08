@@ -1,48 +1,95 @@
 const PHOTO_LIST = [
-    { file: 'img20250422.jpg', date: '2024.04.22', text: '第一次遇见你，我们的故事就开始啦。✨' },
-    { file: 'img20250430.jpg', date: '2024.04.30', text: '就这么开始了第一次约会嘿嘿嘿。💕' },
-    { file: 'img20250509.jpg', date: '2024.05.09', text: '小小二龙喉，出发！📸' },
-    { file: 'img20250515.jpg', date: '2024.05.15', text: '黑沙滩，这是谁的最爱呀？💕' },
-    { file: 'img20250520.jpg', date: '2024.05.20', text: '送给你呀！（害羞💕' },
-    { file: 'img20250530.jpg', date: '2024.05.30', text: '一起回中山咯。💖' },
-    { file: 'img20250605.jpg', date: '2024.06.05', text: '你怎么就靠上来了呀。😊' },
-    { file: 'img20250613.jpg', date: '2024.06.13', text: '我真帅，夹带私货。😎' },
-    { file: 'img20250626.jpg', date: '2024.06.26', text: '饭后和你散步一起享受休闲时光。😊' },
-    { file: 'img20250627.jpg', date: '2024.06.27', text: '黑沙滩我们又来啦。⏰' },
-    { file: 'img20250630.jpg', date: '2024.06.30', text: '有人说这张她好可爱。🥰' },
-    { file: 'img20250723.jpg', date: '2024.07.23', text: '来看日落了呀。☀️' },
-    { file: 'img20250726.jpg', date: '2024.07.26', text: '一起做小小社工捏。🍃' },
-    { file: 'img20250805.jpg', date: '2024.08.05', text: '欢迎来到我的主场。🚀' },
-    { file: 'img20250813.jpg', date: '2024.08.13', text: 'Gigi好看，Gogo嫌弃。😏' },
-    { file: 'img20250901.jpg', date: '2024.09.01', text: '新学期开始啦，送Gigi上学。💝' },
-    { file: 'img20250903.jpg', date: '2024.09.03', text: '一起去薅羊毛咯。🍂' },
-    { file: 'img20250912.jpg', date: '2024.09.12', text: '又去逛gaigai啦。💓' },
-    { file: 'img20250920.jpg', date: '2024.09.20', text: '一人一个大奖，我们超棒哒。🍁' },
-    { file: 'img20251003.jpg', date: '2024.10.03', text: '去了你的家乡哦。🌅' },
-    { file: 'img20251018.jpg', date: '2024.10.18', text: '一起逛博物馆咯。👫' },
-    { file: 'img20251108.jpg', date: '2024.11.08', text: '依旧是让Gigi超期待的黑沙滩。🌟' },
-    { file: 'img20251115.jpg', date: '2024.11.15', text: '送你一朵小黄花。😊' },
-    { file: 'img20251122.jpg', date: '2024.11.22', text: '你的星星人的星星怎么少了个角？🤔' },
-    { file: 'img20251202.jpg', date: '2024.12.02', text: '是一口寿司郎噢。🍣' },
-    { file: 'img20251212.jpg', date: '2024.12.12', text: '心心念念的Omakase安排上咯。🎉' },
-    { file: 'img20251214.jpg', date: '2024.12.14', text: '一起参加百万行啦。🚶' },
-    { file: 'img20251219.jpg', date: '2024.12.19', text: 'oi,给我爆点金币。💰' },
-    { file: 'img20251225.jpg', date: '2024.12.25', text: '圣诞快乐！你就是我最好的圣诞礼物。🎅' },
-    { file: 'img20260101.jpg', date: '2025.01.01', text: '新的一年，我们未来可期！🎊' }
+    { file: 'img20250422.jpg', date: '2025.04.22', text: '第一次遇见你，我们的故事就开始啦。✨' },
+    { file: 'img20250430.jpg', date: '2025.04.30', text: '就这么开始了第一次约会嘿嘿嘿。💕' },
+    { file: 'img20250509.jpg', date: '2025.05.09', text: '小小二龙喉，出发！📸' },
+    { file: 'img20250515.jpg', date: '2025.05.15', text: '黑沙滩，这是谁的最爱呀？💕' },
+    { file: 'img20250520.jpg', date: '2025.05.20', text: '送给你呀！（害羞💕' },
+    { file: 'img20250530.jpg', date: '2025.05.30', text: '一起回中山咯。💖' },
+    { file: 'img20250605.jpg', date: '2025.06.05', text: '你怎么就靠上来了呀。😊' },
+    { file: 'img20250613.jpg', date: '2025.06.13', text: '我真帅，夹带私货。😎' },
+    { file: 'img20250626.jpg', date: '2025.06.26', text: '饭后和你散步一起享受休闲时光。😊' },
+    { file: 'img20250627.jpg', date: '2025.06.27', text: '黑沙滩我们又来啦。⏰' },
+    { file: 'img20250630.jpg', date: '2025.06.30', text: '有人说这张她好可爱。🥰' },
+    { file: 'img20250723.jpg', date: '2025.07.23', text: '来看日落了呀。☀️' },
+    { file: 'img20250726.jpg', date: '2025.07.26', text: '一起做小小社工捏。🍃' },
+    { file: 'img20250805.jpg', date: '2025.08.05', text: '欢迎来到我的主场。🚀' },
+    { file: 'img20250813.jpg', date: '2025.08.13', text: 'Gigi好看，Gogo嫌弃。😏' },
+    { file: 'img20250901.jpg', date: '2025.09.01', text: '新学期开始啦，送Gigi上学。💝' },
+    { file: 'img20250903.jpg', date: '2025.09.03', text: '一起去薅羊毛咯。🍂' },
+    { file: 'img20250912.jpg', date: '2025.09.12', text: '又去逛gaigai啦。💓' },
+    { file: 'img20250920.jpg', date: '2025.09.20', text: '一人一个大奖，我们超棒哒。🍁' },
+    { file: 'img20251003.jpg', date: '2025.10.03', text: '去了你的家乡哦。🌅' },
+    { file: 'img20251018.jpg', date: '2025.10.18', text: '一起逛博物馆咯。👫' },
+    { file: 'img20251108.jpg', date: '2025.11.08', text: '依旧是让Gigi超期待的黑沙滩。🌟' },
+    { file: 'img20251115.jpg', date: '2025.11.15', text: '送你一朵小黄花。😊' },
+    { file: 'img20251122.jpg', date: '2025.11.22', text: '你的星星人的星星怎么少了个角？🤔' },
+    { file: 'img20251202.jpg', date: '2025.12.02', text: '是一口寿司郎噢。🍣' },
+    { file: 'img20251212.jpg', date: '2025.12.12', text: '心心念念的Omakase安排上咯。🎉' },
+    { file: 'img20251214.jpg', date: '2025.12.14', text: '一起参加百万行啦。🚶' },
+    { file: 'img20251219.jpg', date: '2025.12.19', text: 'oi,给我爆点金币。💰' },
+    { file: 'img20251225.jpg', date: '2025.12.25', text: '圣诞快乐！你就是我最好的圣诞礼物。🎅' },
+    { file: 'img20260101.jpg', date: '2026.01.01', text: '新的一年，我们未来可期！🎊' }
 ];
 
 const isHomeDir = window.location.pathname.includes('/apps/home');
 const assetsBase = isHomeDir ? 'assets/' : 'apps/home/assets/';
 const musicPath = `${assetsBase}music/music.mp3`;
-const PRELOAD_AHEAD = 6;
 
-function preloadImage(src) {
-    return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
-        img.src = src;
-    });
+function getNetworkHint() {
+    const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const effectiveType = c && c.effectiveType ? String(c.effectiveType) : '';
+    const saveData = !!(c && c.saveData);
+    return { effectiveType, saveData };
+}
+
+function choosePreloadAhead() {
+    const { effectiveType, saveData } = getNetworkHint();
+    if (saveData) return 1;
+    if (effectiveType.includes('2g')) return 1;
+    if (effectiveType.includes('3g')) return 3;
+    return 8;
+}
+
+function choosePreloadConcurrency() {
+    return 2;
+}
+
+class ImagePreloadQueue {
+    constructor(concurrency = 2) {
+        this.concurrency = Math.max(1, Number(concurrency) || 1);
+        this._q = [];
+        this._active = 0;
+
+        document.addEventListener('visibilitychange', () => this._drain());
+    }
+
+    enqueue(url) {
+        if (!url) return;
+        this._q.push(url);
+        this._drain();
+    }
+
+    _drain() {
+        if (document.visibilityState === 'hidden') return;
+
+        while (this._active < this.concurrency && this._q.length) {
+            const url = this._q.shift();
+            if (!url) continue;
+
+            this._active++;
+            const img = new Image();
+
+            const done = () => {
+                this._active = Math.max(0, this._active - 1);
+                // Yield to keep main thread responsive.
+                setTimeout(() => this._drain(), 0);
+            };
+
+            img.onload = done;
+            img.onerror = done;
+            img.src = url;
+        }
+    }
 }
 
 class BirthdayApp {
@@ -54,9 +101,13 @@ class BirthdayApp {
         this.createFirework = null;
         this.state = 'gift';
         this._preloadedUrls = new Set();
+        this._preloadAhead = choosePreloadAhead();
+        this._preloadQueue = new ImagePreloadQueue(choosePreloadConcurrency());
+        this._bgPreloadHandle = null;
+        this._audioPrepared = false;
         this.initDOM();
         this.initAudio();
-        this._preloadBatch(0, PRELOAD_AHEAD);
+        this._preloadBatch(0, this._preloadAhead);
     }
 
     _getPhotoUrl(idx) {
@@ -69,7 +120,7 @@ class BirthdayApp {
             const url = this._getPhotoUrl(i);
             if (url && !this._preloadedUrls.has(url)) {
                 this._preloadedUrls.add(url);
-                preloadImage(url);
+                this._preloadQueue.enqueue(url);
             }
         }
     }
@@ -89,14 +140,44 @@ class BirthdayApp {
     }
 
     initAudio() {
-        this.audio = new Audio(musicPath);
+        // Avoid starting a big download immediately; warm up later when idle.
+        this.audio = new Audio();
         this.audio.loop = true;
+        // De-prioritize music: don't auto-download, only start when user clicks gift.
+        this.audio.preload = 'none';
+        this.audio.playsInline = true;
+        this.audio.muted = false;
+        this.audio.volume = 0.9;
+    }
+
+    _prepareAudio() {
+        if (!this.audio || this._audioPrepared) return;
+        this._audioPrepared = true;
         this.audio.preload = 'auto';
+        this.audio.src = musicPath;
+        try { this.audio.load(); } catch (_) {}
+    }
+
+    _playMusic() {
+        if (!this.audio) return;
+        this._prepareAudio();
+        const p = this.audio.play();
+        if (p && typeof p.catch === 'function') {
+            p.catch(() => {
+                // Retry once after enough data is buffered.
+                this.audio.addEventListener('canplay', () => {
+                    this.audio.play().catch(() => {});
+                }, { once: true });
+            });
+        }
     }
 
     openGift() {
         if (this.state !== 'gift') return;
         this.state = 'opening';
+
+        // On iOS/Safari, play() is most reliable when called immediately on the user gesture.
+        this._playMusic();
 
         const giftBox = document.getElementById('gift-box-container');
         if (giftBox) {
@@ -107,8 +188,6 @@ class BirthdayApp {
             this.createBoxConfetti(cx, cy, 40);
             setTimeout(() => this.createBoxConfetti(cx, cy, 25), 150);
         }
-
-        this.audio.play().catch(() => {});
 
         setTimeout(() => {
             this.giftSection.classList.add('fade-out-up');
@@ -249,7 +328,8 @@ class BirthdayApp {
                 ctx.restore();
             }
 
-            if (this.state === 'fireworks' && Math.random() < 0.06) {
+            // Keep fireworks alive behind the photo wall as well.
+            if ((this.state === 'fireworks' || this.state === 'gallery') && Math.random() < 0.06) {
                 this.createFirework(
                     Math.random() * canvas.width,
                     Math.random() * canvas.height * 0.5
@@ -262,7 +342,8 @@ class BirthdayApp {
 
     startFireworks() {
         this.state = 'fireworks';
-        this._preloadBatch(0, PHOTO_LIST.length);
+        // Progressive background preload to avoid flooding network connections.
+        this._startBackgroundPreload();
 
         if (!this.fireworksCanvas) {
             this.initFireworksEngine();
@@ -287,17 +368,39 @@ class BirthdayApp {
 
     showGallery() {
         this.state = 'gallery';
-        if (this.fireworksLoop) {
-            cancelAnimationFrame(this.fireworksLoop);
-            this.fireworksLoop = null;
-        }
         this.gallerySection.classList.remove('hidden');
         this.renderPhotos();
+    }
+
+    _startBackgroundPreload() {
+        if (this._bgPreloadHandle) return;
+        let idx = 0;
+
+        const tick = () => {
+            this._bgPreloadHandle = null;
+            // Only preload aggressively while fireworks are showing.
+            // In gallery mode, prioritize in-view image loads and music.
+            if (this.state !== 'fireworks') return;
+
+            const batch = Math.max(2, this._preloadAhead);
+            this._preloadBatch(idx, batch);
+            idx += batch;
+            if (idx >= PHOTO_LIST.length) return;
+
+            if ('requestIdleCallback' in window) {
+                this._bgPreloadHandle = requestIdleCallback(tick, { timeout: 1600 });
+            } else {
+                this._bgPreloadHandle = setTimeout(tick, 800);
+            }
+        };
+
+        tick();
     }
 
     renderPhotos() {
         const container = document.getElementById('photo-wall');
         container.innerHTML = '';
+        const rootEl = this.gallerySection || null;
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -308,33 +411,48 @@ class BirthdayApp {
                 const img = card.querySelector('img[data-src]');
                 if (img) {
                     const src = img.dataset.src;
+                    this._preloadedUrls.add(src);
                     img.src = src;
                     img.removeAttribute('data-src');
 
+                    const placeholder = img.previousElementSibling;
+                    const reveal = () => {
+                        img.style.opacity = '1';
+                        if (placeholder) placeholder.remove();
+                    };
+
+                    // Always reveal on load. decode() is best-effort only.
+                    img.addEventListener('load', reveal, { once: true });
+
                     if (img.decode) {
                         img.decode().then(() => {
-                            img.style.opacity = '1';
-                            const placeholder = img.previousElementSibling;
-                            if (placeholder) placeholder.remove();
+                            reveal();
                         }).catch(() => {
-                            img.style.opacity = '1';
+                            // ignore
                         });
-                    } else {
-                        img.onload = () => { img.style.opacity = '1'; };
                     }
+                    else {
+                        // load handler already attached
+                    }
+
+                    // Fallback: if it finished but callbacks don't fire for some reason, reveal anyway.
+                    setTimeout(() => {
+                        if (img.complete && img.naturalWidth > 0) reveal();
+                    }, 3000);
                 }
 
-                this._preloadBatch(idx + 1, PRELOAD_AHEAD);
+                this._preloadBatch(idx + 1, this._preloadAhead);
 
                 card.classList.remove('opacity-0');
                 card.style.transform = `rotate(${card.dataset.rotate || 0}deg) translateY(0)`;
                 observer.unobserve(card);
             });
-        }, { rootMargin: '300px' });
+        }, { root: rootEl, rootMargin: '220px' });
 
         PHOTO_LIST.forEach((photo, idx) => {
             const imgSrc = `${assetsBase}photos/${photo.file}`;
             const rotate = ((Math.random() - 0.5) * 8).toFixed(1);
+            const fetchPriority = idx < 2 ? 'high' : 'auto';
 
             const div = document.createElement('div');
             div.className = 'w-64 transition-all duration-700 ease-out opacity-0';
@@ -348,7 +466,7 @@ class BirthdayApp {
                         <div class="animate-pulse text-gray-400 text-2xl absolute">📷</div>
                         <img data-src="${imgSrc}" alt="${photo.date}" 
                              class="w-full h-full object-cover relative z-10 transition-opacity duration-500" 
-                             loading="lazy" style="opacity:0"
+                             loading="lazy" decoding="async" fetchpriority="${fetchPriority}" style="opacity:0"
                              onerror="this.previousElementSibling.textContent='😢'">
                     </div>
                     <div class="font-handwriting text-gray-700 text-lg tracking-widest mb-2">${photo.date}</div>

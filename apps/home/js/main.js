@@ -278,10 +278,15 @@ const App = {
 
         if (!content && !mood) return;
 
-        if (content && content.includes('生日')) {
+        // Command: trigger birthday overlay without writing the keyword into chat history.
+        const trimmed = (content || '').trim();
+        if (trimmed === '生日') {
             if (typeof window.triggerBirthday === 'function') {
                 window.triggerBirthday();
             }
+            input.value = '';
+            if (moodSelect) moodSelect.value = '';
+            return;
         }
 
         if (content && content.includes('游戏')) {
