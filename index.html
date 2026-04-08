@@ -835,7 +835,15 @@
                 <div class="text-center mt-12 text-gray-500 text-xs pb-10">
                     <p>To be Continue ❤️ </p>
                     <button
-                        onclick="document.getElementById('birthday-app').classList.add('hidden'); document.getElementById('page-auth').classList.remove('hidden');"
+                        onclick="
+                            document.getElementById('birthday-app').classList.add('hidden');
+                            if (window.app && typeof window.app.showPage === 'function') {
+                                window.app.showPage('main');
+                            } else {
+                                document.getElementById('page-auth').classList.add('hidden');
+                                document.getElementById('page-main').classList.remove('hidden');
+                            }
+                        "
                         class="mt-8 text-gray-700 underline">进入 Love Space</button>
                 </div>
             </div>
