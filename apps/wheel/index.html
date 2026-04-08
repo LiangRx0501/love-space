@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>布布的幸运小转盘</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <a href="../../" class="back-home-btn" title="返回主页" aria-label="返回主页">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+    </a>
+
+    <main class="wheel-page">
+        <div class="ambient ambient-left"></div>
+        <div class="ambient ambient-right"></div>
+
+        <section class="wheel-panel">
+            <p class="eyebrow">Lucky Wheel</p>
+            <h1>布布的幸运小转盘</h1>
+            <p class="subtitle">点击转盘开始。每次都会随机停在 12 个彩色扇区中的一个。</p>
+
+            <div class="wheel-stage">
+                <div class="pointer" aria-hidden="true"></div>
+
+                <button id="wheel-button" class="wheel-button" type="button" aria-label="开始转动转盘">
+                    <div id="wheel" class="wheel-face">
+                        <div class="wheel-center">
+                            <span class="wheel-center-label">biu我</span>
+                        </div>
+                    </div>
+                </button>
+            </div>
+
+            <div class="wheel-footer">
+                <div id="spin-status" class="spin-status">等待结果</div>
+                <button id="spin-action" class="spin-action" type="button">旋转一次</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="wheel.js"></script>
+</body>
+
+</html>

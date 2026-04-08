@@ -300,6 +300,11 @@ const App = {
         if (moodSelect) moodSelect.value = '';
     },
 
+    openWheel() {
+        const isRoot = !window.location.pathname.includes('/apps/home');
+        window.location.href = isRoot ? './apps/wheel/' : '../wheel/';
+    },
+
     doCheckIn: () => Calendar.doCheckIn(),
     sootheUser: (id) => Calendar.sootheUser(id),
     changeMonth: (offset) => Calendar.changeMonth(offset),
