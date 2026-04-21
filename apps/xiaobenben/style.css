@@ -1,0 +1,85 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+}
+
+body {
+    color: #fff7fb;
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background:
+        radial-gradient(circle at 18% 18%, rgba(255, 123, 172, 0.16), transparent 24%),
+        radial-gradient(circle at 82% 18%, rgba(106, 220, 255, 0.14), transparent 22%),
+        linear-gradient(180deg, #12071e, #07040c);
+}
+
+.back-home-btn {
+    position: fixed;
+    top: calc(18px + env(safe-area-inset-top, 0px));
+    left: 18px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(12px);
+}
+
+.placeholder-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.placeholder-panel {
+    width: min(100%, 560px);
+    padding: 32px 24px;
+    border-radius: 28px;
+    background: rgba(18, 14, 28, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(18px);
+}
+
+.eyebrow {
+    margin: 0 0 10px;
+    color: #8fe9ff;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    font-size: 12px;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(30px, 8vw, 48px);
+}
+
+.subtitle {
+    margin: 14px 0 0;
+    color: rgba(255, 247, 251, 0.72);
+    line-height: 1.7;
+}
+
+.note-card {
+    margin-top: 24px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 247, 251, 0.82);
+}
+
+code {
+    font-family: Consolas, monospace;
+}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>香布布和凑一二的回忆</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="../home/js/supabase-js@2.js"></script>
+</head>
+
+<body>
+    <a href="../../" class="back-home-btn" title="返回主页" aria-label="返回主页">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+    </a>
+
+    <main class="album-page">
+        <div class="ambient ambient-left"></div>
+        <div class="ambient ambient-right"></div>
+
+        <section class="album-panel">
+            <div class="panel-copy">
+                <p class="eyebrow">Shared Memory Wall</p>
+                <h1>香布布和凑一二的回忆</h1>
+                <p class="subtitle">上传图片、填写时间和描述，系统会自动套用统一照片卡模板，把你们的重要瞬间整理进同一面回忆墙。</p>
+            </div>
+
+            <div id="login-hint" class="login-hint hidden">
+                当前没有可用登录态，正在返回主页登录...
+            </div>
+
+            <div class="album-layout">
+                <section class="composer-panel">
+                    <div class="composer-head">
+                        <div>
+                            <h2>新建一张照片卡</h2>
+                            <p id="author-badge" class="author-badge">未登录</p>
+                        </div>
+                        <button id="publish-btn" class="publish-btn" type="button">存入回忆墙</button>
+                    </div>
+
+                    <form id="album-form" class="album-form">
+                        <label class="field">
+                            <span>1. 图片</span>
+                            <input id="photo-file" type="file" accept="image/*" required>
+                            <small>支持手机拍照或相册上传，前端限制 2MB 以内，避免加载过慢和占满免费额度。</small>
+                        </label>
+
+                        <label class="field">
+                            <span>2. 时间</span>
+                            <input id="shot-date" type="date" required>
+                        </label>
+
+                        <label class="field">
+                            <span>3. 描述</span>
+                            <textarea id="caption" rows="4" maxlength="120" placeholder="写一句和这张照片有关的话..." required></textarea>
+                            <small><span id="caption-count">0</span>/120</small>
+                        </label>
+                    </form>
+
+                    <div id="submit-status" class="submit-status">等待上传</div>
+                </section>
+
+                <section class="preview-panel">
+                    <div class="preview-head">
+                        <h2>实时预览</h2>
+                        <p>固定模板，只上传图片、时间和文字内容</p>
+                    </div>
+
+                    <div id="preview-card" class="photo-card">
+                        <div class="photo-tape"></div>
+                        <div class="photo-frame">
+                            <div class="photo-media">
+                                <img id="preview-image" alt="预览图片">
+                                <div id="preview-placeholder" class="photo-placeholder">等待上传图片</div>
+                            </div>
+                            <div id="preview-date" class="photo-date">2026.04.08</div>
+                            <div id="preview-caption" class="photo-caption">这里会显示你的文字描述。</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="recent-panel">
+                <div class="recent-head">
+                    <div>
+                        <p class="eyebrow">Recent Memories</p>
+                        <h2>全部回忆</h2>
+                    </div>
+                    <button id="refresh-recent" class="ghost-btn" type="button">刷新</button>
+                </div>
+                <div id="recent-list" class="recent-list"></div>
+            </section>
+        </section>
+    </main>
+
+    <script type="module" src="album.js"></script>
+</body>
+
+</html>

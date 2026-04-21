@@ -9,6 +9,7 @@ const App = {
     _timerInterval: null,
     _inputBound: false,
     _pointsHandler: null,
+    _tabMenuExpanded: false,
 
     async init() {
         console.log('Love Space App Initializing...');
@@ -56,6 +57,7 @@ const App = {
 
         this.initWeather();
         this.bindInputEnter();
+        this.syncTabMenu(false);
     },
 
     async initWeather() {
@@ -177,6 +179,26 @@ const App = {
         if (tab === 'calendar-grid') {
             Calendar.renderCalendarGrid();
         }
+
+        this.syncTabMenu(false);
+    },
+
+    syncTabMenu(expanded = this._tabMenuExpanded) {
+        this._tabMenuExpanded = !!expanded;
+
+        const extra = document.getElementById('tab-grid-extra');
+        const toggle = document.getElementById('tab-menu-toggle');
+        if (extra) {
+            extra.classList.toggle('hidden', !this._tabMenuExpanded);
+        }
+        if (toggle) {
+            toggle.textContent = this._tabMenuExpanded ? '▴' : '▾';
+            toggle.setAttribute('aria-expanded', this._tabMenuExpanded ? 'true' : 'false');
+        }
+    },
+
+    toggleTabMenu() {
+        this.syncTabMenu(!this._tabMenuExpanded);
     },
 
     switchLoginMode(mode) {
@@ -278,16 +300,16 @@ const App = {
 
         if (!content && !mood) return;
 
-        // Command: trigger birthday overlay without writing the keyword into chat history.
-        const trimmed = (content || '').trim();
-        if (trimmed === '生日') {
-            if (typeof window.triggerBirthday === 'function') {
-                window.triggerBirthday();
-            }
-            input.value = '';
-            if (moodSelect) moodSelect.value = '';
-            return;
-        }
+        // Birthday photo-wall trigger is intentionally disabled for now.
+        // const trimmed = (content || '').trim();
+        // if (trimmed === '生日') {
+        //     if (typeof window.triggerBirthday === 'function') {
+        //         window.triggerBirthday();
+        //     }
+        //     input.value = '';
+        //     if (moodSelect) moodSelect.value = '';
+        //     return;
+        // }
 
         if (content && content.includes('游戏')) {
             const isRoot = !window.location.pathname.includes('/apps/home');
@@ -303,6 +325,21 @@ const App = {
     openWheel() {
         const isRoot = !window.location.pathname.includes('/apps/home');
         window.location.href = isRoot ? './apps/wheel/' : '../wheel/';
+    },
+
+    openAlbum() {
+        const isRoot = !window.location.pathname.includes('/apps/home');
+        window.location.href = isRoot ? './apps/album/' : '../album/';
+    },
+
+    openMenu() {
+        const isRoot = !window.location.pathname.includes('/apps/home');
+        window.location.href = isRoot ? './apps/menu/' : '../menu/';
+    },
+
+    openXiaobenben() {
+        const isRoot = !window.location.pathname.includes('/apps/home');
+        window.location.href = isRoot ? './apps/xiaobenben/' : '../xiaobenben/';
     },
 
     doCheckIn: () => Calendar.doCheckIn(),

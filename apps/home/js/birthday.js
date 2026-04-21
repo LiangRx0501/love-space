@@ -1,3 +1,5 @@
+import { fetchMemoryAlbumEntries } from './album-service.js';
+
 const PHOTO_LIST = [
     { file: 'img20250422.jpg', date: '2025.04.22', text: '第一次遇见你，我们的故事就开始啦。✨' },
     { file: 'img20250430.jpg', date: '2025.04.30', text: '就这么开始了第一次约会嘿嘿嘿。💕' },
@@ -34,6 +36,20 @@ const PHOTO_LIST = [
 const isHomeDir = window.location.pathname.includes('/apps/home');
 const assetsBase = isHomeDir ? 'assets/' : 'apps/home/assets/';
 const musicPath = `${assetsBase}music/music.mp3`;
+
+function mapStaticPhotoEntries() {
+    return PHOTO_LIST.map((photo, idx) => ({
+        id: `static-${idx}`,
+        imagePath: photo.file,
+        imageUrl: `${assetsBase}photos/${photo.file}`,
+        shotDate: photo.date,
+        caption: photo.text,
+        authorName: '',
+        createdAt: null,
+        isPublished: true,
+        sortOrder: idx
+    }));
+}
 
 function getNetworkHint() {
     const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -105,18 +121,41 @@ class BirthdayApp {
         this._preloadQueue = new ImagePreloadQueue(choosePreloadConcurrency());
         this._bgPreloadHandle = null;
         this._audioPrepared = false;
+        this.photoEntries = mapStaticPhotoEntries();
+        this._entriesPromise = this._loadPhotoEntries();
         this.initDOM();
         this.initAudio();
         this._preloadBatch(0, this._preloadAhead);
     }
 
+    async _loadPhotoEntries() {
+        try {
+            const remoteEntries = await fetchMemoryAlbumEntries();
+            if (remoteEntries.length > 0) {
+                this.photoEntries = remoteEntries;
+                this._preloadedUrls.clear();
+                this._preloadBatch(0, this._preloadAhead);
+            }
+        } catch (_) {
+            this.photoEntries = mapStaticPhotoEntries();
+        }
+        return this.photoEntries;
+    }
+
+    async _ensurePhotoEntries() {
+        if (this._entriesPromise) {
+            await this._entriesPromise;
+        }
+        return this.photoEntries;
+    }
+
     _getPhotoUrl(idx) {
-        if (idx < 0 || idx >= PHOTO_LIST.length) return null;
-        return `${assetsBase}photos/${PHOTO_LIST[idx].file}`;
+        if (idx < 0 || idx >= this.photoEntries.length) return null;
+        return this.photoEntries[idx].imageUrl;
     }
 
     _preloadBatch(start, count) {
-        for (let i = start; i < Math.min(start + count, PHOTO_LIST.length); i++) {
+        for (let i = start; i < Math.min(start + count, this.photoEntries.length); i++) {
             const url = this._getPhotoUrl(i);
             if (url && !this._preloadedUrls.has(url)) {
                 this._preloadedUrls.add(url);
@@ -369,7 +408,10 @@ class BirthdayApp {
     showGallery() {
         this.state = 'gallery';
         this.gallerySection.classList.remove('hidden');
-        this.renderPhotos();
+        this.renderPhotos().catch(() => {
+            this.photoEntries = mapStaticPhotoEntries();
+            this.renderPhotoCards();
+        });
     }
 
     _startBackgroundPreload() {
@@ -385,7 +427,7 @@ class BirthdayApp {
             const batch = Math.max(2, this._preloadAhead);
             this._preloadBatch(idx, batch);
             idx += batch;
-            if (idx >= PHOTO_LIST.length) return;
+            if (idx >= this.photoEntries.length) return;
 
             if ('requestIdleCallback' in window) {
                 this._bgPreloadHandle = requestIdleCallback(tick, { timeout: 1600 });
@@ -397,7 +439,35 @@ class BirthdayApp {
         tick();
     }
 
-    renderPhotos() {
+    _buildPhotoCard(photo, idx) {
+        const rotate = ((Math.random() - 0.5) * 8).toFixed(1);
+        const fetchPriority = idx < 2 ? 'high' : 'auto';
+
+        const div = document.createElement('div');
+        div.className = 'w-64 transition-all duration-700 ease-out opacity-0';
+        div.style.transform = `rotate(${rotate}deg) translateY(40px)`;
+        div.dataset.rotate = rotate;
+        div.dataset.idx = idx;
+
+        div.innerHTML = `
+            <div class="bg-white p-4 pb-10 shadow-2xl text-center rounded-sm relative">
+                <div class="relative overflow-hidden rounded-sm mb-3 bg-gray-200 aspect-[3/4] flex items-center justify-center">
+                    <div class="animate-pulse text-gray-400 text-2xl absolute">📷</div>
+                    <img data-src="${photo.imageUrl}" alt="${photo.shotDate}" 
+                         class="w-full h-full object-cover relative z-10 transition-opacity duration-500" 
+                         loading="lazy" decoding="async" fetchpriority="${fetchPriority}" style="opacity:0"
+                         onerror="this.previousElementSibling.textContent='😢'">
+                </div>
+                <div class="font-handwriting text-gray-700 text-lg tracking-widest mb-2">${photo.shotDate}</div>
+                <div class="font-handwriting text-gray-600 text-sm leading-relaxed px-2">${photo.caption}</div>
+                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-pink-200/50 rotate-1"></div>
+            </div>
+        `;
+
+        return div;
+    }
+
+    renderPhotoCards() {
         const container = document.getElementById('photo-wall');
         container.innerHTML = '';
         const rootEl = this.gallerySection || null;
@@ -421,21 +491,14 @@ class BirthdayApp {
                         if (placeholder) placeholder.remove();
                     };
 
-                    // Always reveal on load. decode() is best-effort only.
                     img.addEventListener('load', reveal, { once: true });
 
                     if (img.decode) {
                         img.decode().then(() => {
                             reveal();
-                        }).catch(() => {
-                            // ignore
-                        });
-                    }
-                    else {
-                        // load handler already attached
+                        }).catch(() => {});
                     }
 
-                    // Fallback: if it finished but callbacks don't fire for some reason, reveal anyway.
                     setTimeout(() => {
                         if (img.complete && img.naturalWidth > 0) reveal();
                     }, 3000);
@@ -449,35 +512,16 @@ class BirthdayApp {
             });
         }, { root: rootEl, rootMargin: '220px' });
 
-        PHOTO_LIST.forEach((photo, idx) => {
-            const imgSrc = `${assetsBase}photos/${photo.file}`;
-            const rotate = ((Math.random() - 0.5) * 8).toFixed(1);
-            const fetchPriority = idx < 2 ? 'high' : 'auto';
-
-            const div = document.createElement('div');
-            div.className = 'w-64 transition-all duration-700 ease-out opacity-0';
-            div.style.transform = `rotate(${rotate}deg) translateY(40px)`;
-            div.dataset.rotate = rotate;
-            div.dataset.idx = idx;
-
-            div.innerHTML = `
-                <div class="bg-white p-4 pb-10 shadow-2xl text-center rounded-sm relative">
-                    <div class="relative overflow-hidden rounded-sm mb-3 bg-gray-200 aspect-[3/4] flex items-center justify-center">
-                        <div class="animate-pulse text-gray-400 text-2xl absolute">📷</div>
-                        <img data-src="${imgSrc}" alt="${photo.date}" 
-                             class="w-full h-full object-cover relative z-10 transition-opacity duration-500" 
-                             loading="lazy" decoding="async" fetchpriority="${fetchPriority}" style="opacity:0"
-                             onerror="this.previousElementSibling.textContent='😢'">
-                    </div>
-                    <div class="font-handwriting text-gray-700 text-lg tracking-widest mb-2">${photo.date}</div>
-                    <div class="font-handwriting text-gray-600 text-sm leading-relaxed px-2">${photo.text}</div>
-                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-pink-200/50 rotate-1"></div>
-                </div>
-            `;
-
+        this.photoEntries.forEach((photo, idx) => {
+            const div = this._buildPhotoCard(photo, idx);
             container.appendChild(div);
             observer.observe(div);
         });
+    }
+
+    async renderPhotos() {
+        await this._ensurePhotoEntries();
+        this.renderPhotoCards();
     }
 }
 
