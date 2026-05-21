@@ -3,28 +3,38 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>小笨笨占位</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>小笨笨</title>
+    <script>document.documentElement.classList.add('love-loading-pending');</script>
+    <link rel="stylesheet" href="../load/loading.css?v=load-4">
     <link rel="stylesheet" href="style.css">
+    <script type="module" src="../load/boot.js?v=load-4"></script>
+    <script defer src="../home/js/supabase-js@2.js"></script>
 </head>
 
 <body>
-    <a href="../../" class="back-home-btn" title="返回主页" aria-label="返回主页">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-        </svg>
-    </a>
+    <main class="notes-app">
+        <header class="notes-topbar" aria-label="小笨笨顶部栏">
+            <a href="../../" class="back-home-btn" title="返回主页" aria-label="返回主页">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+                </svg>
+            </a>
+        </header>
 
-    <main class="placeholder-page">
-        <section class="placeholder-panel">
-            <p class="eyebrow">布布悄悄说</p>
+        <section class="notes-sheet">
             <h1>小笨笨</h1>
-            <p class="subtitle">一二呀，小笨笨这页布布还在悄悄准备中，你先等等我嘛，很快就好啦。</p>
-            <div class="note-card">
-                布布正在开发中
-            </div>
+            <div id="login-hint" class="login-hint hidden">当前没有可用登录态，正在返回主页登录...</div>
+            <div id="notes-list" class="notes-list" aria-label="小笨笨清单"></div>
+            <label class="new-note-row" aria-label="新增小笨笨">
+                <span class="check-circle placeholder-circle"></span>
+                <input id="new-note-input" type="text" autocomplete="off" placeholder="">
+            </label>
         </section>
     </main>
+
+    <script type="module" src="xiaobenben.js?v=load-4"></script>
 </body>
 
 </html>

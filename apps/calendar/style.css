@@ -1,0 +1,99 @@
+@import "../shared/base.css?v=shared-1";
+
+body {
+    background: #fff4f9;
+    color: #4b3b42;
+    overflow: hidden;
+}
+
+.calendar-page {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100svh;
+}
+
+.calendar-frame {
+    position: relative;
+    isolation: isolate;
+    background: url("../home/assets/background/month.jpg") center / cover no-repeat;
+    color: #4b3b42;
+}
+
+.calendar-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: rgba(255, 246, 250, 0.2);
+    backdrop-filter: blur(5px) saturate(1.05);
+    -webkit-backdrop-filter: blur(5px) saturate(1.05);
+}
+
+.calendar-frame::after {
+    content: none;
+}
+
+.calendar-card {
+    position: relative;
+    z-index: 1;
+    border-radius: 24px;
+    padding: calc(48px + env(safe-area-inset-top, 0px)) 14px 14px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.calendar-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.calendar-title {
+    color: #4b3b42;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.calendar-nav-button {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.66);
+    color: #db3f92;
+    font-size: 18px;
+    font-weight: 900;
+    box-shadow: 0 6px 14px rgba(126, 76, 94, 0.1);
+}
+
+.calendar-weekdays {
+    color: rgba(75, 59, 66, 0.58);
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.date-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(68, 42, 54, 0.28);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.date-modal-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 24px 24px 0 0;
+    padding: 20px;
+    background: rgba(255, 246, 250, 0.92);
+    color: #4b3b42;
+    box-shadow: 0 -16px 38px rgba(126, 76, 94, 0.2);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}

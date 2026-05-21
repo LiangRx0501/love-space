@@ -1,0 +1,93 @@
+@import "../shared/base.css?v=shared-1";
+
+body {
+    background: #fff4f9;
+    color: white;
+    overflow: hidden;
+}
+
+.timeline-page {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100svh;
+}
+
+#checkin-box {
+    background: linear-gradient(135deg,
+            rgba(255, 247, 236, 0.76) 0%,
+            rgba(255, 221, 234, 0.72) 42%,
+            rgba(223, 245, 255, 0.72) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.68);
+    box-shadow:
+        0 12px 28px rgba(118, 85, 101, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.52);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+#checkin-box h3 {
+    color: #db3f92;
+    font-weight: 800;
+    text-shadow: 0 1px 8px rgba(255, 255, 255, 0.72);
+}
+
+#checkin-box p {
+    color: #6f6170;
+    font-weight: 600;
+}
+
+#checkin-box button {
+    min-width: 72px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #ff7fb5 0%, #ffb86b 58%, #7fd8ff 100%);
+    border: 1px solid rgba(255, 255, 255, 0.62);
+    color: #fff;
+    font-weight: 800;
+    box-shadow:
+        0 8px 18px rgba(255, 126, 180, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    text-shadow: 0 1px 7px rgba(146, 58, 95, 0.32);
+}
+
+#diary-send-btn {
+    background: linear-gradient(135deg, #ff7fb5 0%, #ffb86b 58%, #7fd8ff 100%);
+    border: 1px solid rgba(255, 255, 255, 0.62);
+    box-shadow:
+        0 8px 18px rgba(255, 126, 180, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.timeline-frame {
+    position: relative;
+    isolation: isolate;
+    background: url("../home/assets/background/home1.jpg?v=clean-16-10-1") center / cover no-repeat;
+    box-shadow: none;
+}
+
+.timeline-frame::before,
+.timeline-frame::after {
+    content: none;
+}
+
+.timeline-frame > * {
+    position: relative;
+    z-index: 1;
+}
+
+.timeline-bubble {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: 0 8px 18px rgba(70, 48, 58, 0.12);
+}
+
+.timeline-bubble-blue {
+    background: rgba(222, 241, 255, 0.92);
+}
+
+.timeline-bubble-pink {
+    background: rgba(255, 232, 244, 0.92);
+}
+
+.timeline-bubble-alert {
+    background: rgba(255, 226, 226, 0.92);
+}

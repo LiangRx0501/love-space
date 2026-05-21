@@ -1,0 +1,209 @@
+:root {
+    --ink: #4f342b;
+    --soft-ink: #85665d;
+    --paper: rgba(255, 250, 238, 0.94);
+    --paper-deep: rgba(255, 240, 218, 0.74);
+    --pink: #f08aa8;
+    --peach: #f6b38e;
+    --line: rgba(215, 151, 133, 0.25);
+    --shadow: rgba(105, 63, 45, 0.2);
+    --rule-step: 34px;
+    --rule-line: 28px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100dvh;
+    color: var(--ink);
+    background:
+        radial-gradient(circle at 18% 12%, rgba(255, 237, 190, 0.9), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(255, 196, 210, 0.65), transparent 26%),
+        linear-gradient(150deg, #fdd9c8 0%, #f9c5cf 46%, #f6e1b9 100%);
+    font-family: "LXGW WenKai", "STKaiti", "KaiTi", "Kaiti SC", "Segoe Print", "Comic Sans MS", cursive;
+    overflow-x: hidden;
+}
+
+.home-link {
+    position: fixed;
+    top: calc(14px + env(safe-area-inset-top));
+    left: 14px;
+    z-index: 10;
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(135deg, rgba(244, 140, 169, 0.86), rgba(246, 179, 142, 0.86));
+    box-shadow: 0 12px 30px rgba(148, 79, 90, 0.24);
+    text-decoration: none;
+}
+
+.letter-page {
+    width: min(100%, 820px);
+    min-height: 100dvh;
+    margin: 0 auto;
+    padding: calc(74px + env(safe-area-inset-top)) 16px calc(30px + env(safe-area-inset-bottom));
+}
+
+.letter-sheet {
+    position: relative;
+    overflow: hidden;
+    padding: 30px clamp(22px, 5vw, 54px) 36px;
+    border: 1px solid rgba(255, 255, 255, 0.82);
+    border-radius: 18px;
+    background:
+        linear-gradient(90deg, transparent 0 42px, rgba(240, 138, 168, 0.16) 43px 44px, transparent 45px),
+        linear-gradient(180deg, var(--paper), var(--paper-deep));
+    box-shadow: 0 24px 60px var(--shadow);
+}
+
+.letter-sheet::before,
+.letter-sheet::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+}
+
+.letter-sheet::before {
+    inset: 0;
+    background:
+        radial-gradient(circle at 8% 12%, rgba(255, 255, 255, 0.55), transparent 16%),
+        radial-gradient(circle at 86% 8%, rgba(255, 198, 163, 0.25), transparent 18%);
+    mix-blend-mode: soft-light;
+}
+
+.letter-sheet::after {
+    right: 18px;
+    bottom: 22px;
+    z-index: 3;
+    width: 104px;
+    height: 104px;
+    border: 2px dashed rgba(240, 138, 168, 0.48);
+    border-radius: 50%;
+    transform: rotate(-12deg);
+}
+
+.letter-header,
+.letter-content {
+    position: relative;
+    z-index: 1;
+}
+
+.letter-header {
+    margin-bottom: 22px;
+    text-align: center;
+}
+
+.letter-stamp {
+    position: absolute;
+    right: 14px;
+    bottom: 16px;
+    z-index: 2;
+    width: 112px;
+    height: 112px;
+    object-fit: contain;
+    opacity: 0.46;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    transform: rotate(-12deg);
+    transform-origin: center;
+}
+
+.letter-kicker {
+    margin: 0 0 8px;
+    color: var(--pink);
+    font-family: "Segoe Print", "Comic Sans MS", cursive;
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+}
+
+.letter-header h1 {
+    margin: 0;
+    color: #6e3d36;
+    font-size: clamp(1.85rem, 7vw, 2.9rem);
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.letter-content {
+    font-size: clamp(1.02rem, 3.65vw, 1.12rem);
+    line-height: var(--rule-step);
+    background:
+        repeating-linear-gradient(
+            180deg,
+            transparent 0 var(--rule-line),
+            var(--line) var(--rule-line) calc(var(--rule-line) + 1px),
+            transparent calc(var(--rule-line) + 1px) var(--rule-step)
+        );
+}
+
+.letter-content p {
+    margin: 0 0 var(--rule-step);
+}
+
+.letter-salutation {
+    font-size: 1.14em;
+    font-weight: 600;
+}
+
+.letter-paragraph {
+    text-indent: 2em;
+}
+
+.letter-signature {
+    margin-top: var(--rule-step);
+    text-align: right;
+    color: var(--soft-ink);
+    line-height: var(--rule-step);
+}
+
+.loading,
+.error {
+    text-align: center;
+    color: var(--soft-ink);
+}
+
+@media (max-width: 520px) {
+    :root {
+        --rule-step: 33px;
+    }
+
+    .letter-page {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    .letter-sheet {
+        border-radius: 14px;
+        padding: 26px 20px 32px 30px;
+        background:
+            linear-gradient(90deg, transparent 0 24px, rgba(240, 138, 168, 0.14) 25px 26px, transparent 27px),
+            linear-gradient(180deg, var(--paper), var(--paper-deep));
+    }
+
+    .letter-sheet::after {
+        right: 14px;
+        bottom: 18px;
+        width: 96px;
+        height: 96px;
+    }
+
+    .letter-stamp {
+        right: 9px;
+        bottom: 11px;
+        width: 106px;
+        height: 106px;
+    }
+}

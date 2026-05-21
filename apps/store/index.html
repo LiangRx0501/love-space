@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Gigo 商店</title>
+    <meta name="theme-color" content="#fff4f9">
+    <link rel="icon" type="image/png" sizes="32x32" href="../home/assets/icons/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../home/assets/icons/apple-touch-icon.png">
+    <script>document.documentElement.classList.add('love-loading-pending');</script>
+    <link rel="stylesheet" href="../load/loading.css?v=load-4">
+    <link rel="stylesheet" href="./style.css?v=store-align-2">
+    <script type="module" src="../load/boot.js?v=load-4"></script>
+</head>
+
+<body>
+    <main class="store-page">
+        <a class="home-button" href="../../" aria-label="返回主页" title="返回主页">
+            <svg viewBox="0 0 24 24" width="21" height="21" fill="currentColor" aria-hidden="true">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+            </svg>
+        </a>
+
+        <aside class="store-sidebar" aria-label="商店分类">
+            <div class="points-card">
+                <span>熊熊币</span>
+                <strong id="points-value">🧸 0</strong>
+            </div>
+            <button class="side-button" data-panel="inventory">背包</button>
+            <button class="side-button is-active" data-category="all">全部</button>
+            <button class="side-button" data-category="food">吃喝</button>
+            <button class="side-button" data-category="play">玩乐</button>
+            <button class="side-button" data-category="sweet">亲密</button>
+            <button class="side-button" data-category="care">照顾</button>
+            <button class="side-button" data-category="rest">休息</button>
+            <button class="side-button add-side" data-action="open-add">上架</button>
+        </aside>
+
+        <section class="store-main">
+            <header class="shop-header">
+                <div>
+                    <h1 id="shop-title">Gigi的小店</h1>
+                    <p id="shop-subtitle">粉色心意补给</p>
+                </div>
+                <div class="shop-tabs" role="tablist" aria-label="切换小店">
+                    <button class="shop-tab is-active" data-owner="gigi">Gigi</button>
+                    <button class="shop-tab" data-owner="gogo">Gogo</button>
+                </div>
+            </header>
+
+            <div id="inventory-panel" class="content-panel hidden">
+                <div class="panel-heading">
+                    <h2>我的背包</h2>
+                    <span>可使用 / 已核销</span>
+                </div>
+                <div id="inventory-list" class="inventory-list"></div>
+            </div>
+
+            <div id="shop-panel" class="content-panel">
+                <div id="store-items" class="goods-grid"></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="add-modal" class="modal hidden" aria-hidden="true">
+        <div class="modal-backdrop" data-action="close-add"></div>
+        <form class="modal-sheet" id="add-form">
+            <div class="sheet-handle"></div>
+            <h2>✨ 上架你的心意</h2>
+
+            <div class="preview-row">
+                <div class="preview-icon" id="preview-icon">💗</div>
+                <div>
+                    <strong id="preview-title">新的小心意</strong>
+                    <span id="preview-category">自动匹配样式</span>
+                </div>
+            </div>
+
+            <label class="field-label" for="item-title">商品名称</label>
+            <input id="item-title" name="title" class="text-input" type="text" placeholder="例如：奶茶 / 电影 / 按摩券"
+                autocomplete="off">
+
+            <label class="field-label">大类</label>
+            <div class="category-picker" id="category-picker">
+                <button type="button" class="category-chip is-active" data-add-category="auto">自动</button>
+                <button type="button" class="category-chip" data-add-category="food">吃喝</button>
+                <button type="button" class="category-chip" data-add-category="play">玩乐</button>
+                <button type="button" class="category-chip" data-add-category="sweet">亲密</button>
+                <button type="button" class="category-chip" data-add-category="care">照顾</button>
+                <button type="button" class="category-chip" data-add-category="rest">休息</button>
+            </div>
+
+            <label class="field-label" for="item-price">价格</label>
+            <div class="price-row">
+                <input id="item-price" name="price" type="range" min="10" max="500" step="10" value="50">
+                <strong>🧸 <span id="price-value">50</span></strong>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="ghost-button" data-action="close-add">取消</button>
+                <button type="submit" class="primary-button">立即上架</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="../home/js/supabase-js@2.js"></script>
+    <script type="module" src="./script.js?v=store-app-7"></script>
+</body>
+
+</html>

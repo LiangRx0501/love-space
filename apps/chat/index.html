@@ -5,13 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gogo的小分身 </title>
+    <link rel="stylesheet" href="../load/loading.css?v=load-4">
     <link rel="stylesheet" href="style.css">
+    <script type="module" src="../load/boot.js?v=load-4"></script>
     <link href="https://fonts.loli.net/css2?family=ZCOOL+XiaoWei&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 </head>
 
 <body>
     <!-- 返回恋爱空间按钮 -->
-    <a href="../home/" class="back-home-btn" title="返回恋爱空间">
+    <a href="../../" class="back-home-btn" title="返回恋爱空间">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
         </svg>
@@ -19,7 +21,7 @@
     <style>
         .back-home-btn {
             position: fixed;
-            top: 20px;
+            top: calc(20px + env(safe-area-inset-top, 0px));
             left: 20px;
             width: 44px;
             height: 44px;
@@ -48,14 +50,14 @@
     <div class="chat-container">
         <header class="chat-header">
             <div class="avatar user-avatar">
-                <span class="avatar-emoji">🧑</span>
+                <img src="../home/assets/background/bubu.jpg" alt="Gogo">
             </div>
             <div class="header-info">
                 <h1>Gogo的小居米 </h1>
                 <span class="status">在线中...</span>
             </div>
             <div class="avatar girl-avatar">
-                <span class="avatar-emoji">👩</span>
+                <img src="../home/assets/background/onetwo.jpg" alt="Gigi">
             </div>
         </header>
 

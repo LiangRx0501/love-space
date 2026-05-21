@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Gigo 时光</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../home/assets/icons/favicon-32.png">
+    <script src="../home/js/tailwind.js"></script>
+    <script>document.documentElement.classList.add('love-loading-pending');</script>
+    <link rel="stylesheet" href="../load/loading.css?v=load-4">
+    <link rel="stylesheet" href="./style.css?v=timeline-module-2">
+    <script type="module" src="../load/boot.js?v=load-4"></script>
+</head>
+
+<body data-app="timeline">
+    <main class="timeline-page relative z-10 w-full flex flex-col fade-in">
+        <a href="../../" class="calendar-home-btn" aria-label="返回主页" title="返回主页">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+            </svg>
+        </a>
+
+        <div id="view-timeline" class="timeline-frame flex-1 overflow-y-auto p-4 pb-32 space-y-4 scroll-smooth">
+            <div id="checkin-box"
+                class="hidden glass p-4 rounded-2xl flex justify-between items-center bg-gradient-to-r from-pink-500/20 to-purple-500/20 border-pink-400/30 transform hover:scale-[1.02] transition-transform">
+                <div>
+                    <h3 class="text-lg text-pink-200">✨ 今日签到</h3>
+                    <p class="text-xs text-gray-400">点亮今天，熊熊币+10</p>
+                </div>
+                <button onclick="window.app.doCheckIn()"
+                    class="bg-pink-500 text-white px-4 py-2 rounded-xl text-sm shadow hover:scale-105 transition">签到</button>
+            </div>
+
+            <div id="events-container" class="space-y-4"></div>
+        </div>
+
+        <div id="timeline-composer" class="absolute bottom-0 left-0 right-0 z-30 pb-safe glass border-t border-white/10">
+            <div class="p-4 pt-2 relative">
+                <div id="mood-panel"
+                    class="hidden absolute bottom-full right-4 mb-2 glass p-3 rounded-xl flex gap-3 fade-in">
+                    <button onclick="window.app.sendSOS('angry')" class="text-2xl hover:scale-125 transition">😡</button>
+                    <button onclick="window.app.sendSOS('sad')" class="text-2xl hover:scale-125 transition">😭</button>
+                    <button onclick="window.app.sendSOS('sos')" class="text-2xl hover:scale-125 transition">🆘</button>
+                </div>
+
+                <div id="quote-bar" class="hidden flex items-center gap-2 bg-pink-500/10 border-l-4 border-pink-400 rounded-lg px-3 py-1.5 mb-1">
+                    <span id="quote-text" class="flex-1 text-xs text-pink-200 truncate"></span>
+                    <button onclick="window.app.clearQuote()" class="text-gray-400 hover:text-white text-sm">✕</button>
+                </div>
+
+                <div class="flex gap-2 items-center">
+                    <button onclick="window.app.toggleMoodPanel()" class="text-gray-400 hover:text-pink-400 transition px-1">😤</button>
+                    <input id="new-diary" type="text" placeholder="记录此刻的心情..."
+                        class="flex-1 bg-black/30 border border-white/10 text-white placeholder-gray-500 outline-none text-sm p-3 rounded-xl focus:border-pink-400 transition-colors">
+                    <button onclick="window.app.sendDiary()" id="diary-send-btn"
+                        class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition flex-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../home/js/supabase-js@2.js"></script>
+    <script type="module" src="./script.js?v=timeline-module-6"></script>
+</body>
+
+</html>

@@ -1,10 +1,12 @@
 import { Auth } from '../home/js/auth.js';
+import { LoadingScreen } from '../load/loading.js?v=load-4';
 import {
     createMemoryAlbumEntry,
-    fetchRecentMemoryEntries,
+    fetchMemoryAlbumEntries,
     formatAlbumDate,
     uploadMemoryAlbumImage
-} from '../home/js/album-service.js';
+} from './album-service.js';
+import { toChinaDateISO } from '../shared/china-time.js';
 
 const formEl = document.getElementById('album-form');
 const publishBtn = document.getElementById('publish-btn');
@@ -18,28 +20,35 @@ const previewDate = document.getElementById('preview-date');
 const previewCaption = document.getElementById('preview-caption');
 const submitStatus = document.getElementById('submit-status');
 const recentList = document.getElementById('recent-list');
-const refreshRecentBtn = document.getElementById('refresh-recent');
 const authorBadge = document.getElementById('author-badge');
 const loginHint = document.getElementById('login-hint');
+const openUploadBtn = document.getElementById('open-upload');
+const floatingUploadBtn = document.getElementById('floating-upload');
+const closeUploadBtn = document.getElementById('close-upload');
+const uploadModal = document.getElementById('upload-modal');
+const modalBackdrop = document.getElementById('modal-backdrop');
 
 let previewObjectUrl = '';
 let currentUserKey = '';
 let currentAuthorName = '';
-let recentObserver = null;
+let imageObserver = null;
 
 function setStatus(message, type = '') {
     submitStatus.textContent = message;
     submitStatus.classList.remove('is-success', 'is-error');
-    if (type) {
-        submitStatus.classList.add(type);
-    }
+    if (type) submitStatus.classList.add(type);
+}
+
+function setUploadDisabled(disabled) {
+    publishBtn.disabled = disabled;
+    openUploadBtn.disabled = disabled;
+    floatingUploadBtn.disabled = disabled;
 }
 
 function cleanupPreviewObjectUrl() {
-    if (previewObjectUrl) {
-        URL.revokeObjectURL(previewObjectUrl);
-        previewObjectUrl = '';
-    }
+    if (!previewObjectUrl) return;
+    URL.revokeObjectURL(previewObjectUrl);
+    previewObjectUrl = '';
 }
 
 function updatePreviewImage(file) {
@@ -67,6 +76,24 @@ function updatePreviewText() {
     captionCount.textContent = String(captionInput.value.length);
 }
 
+function resetUploadForm() {
+    formEl.reset();
+    dateInput.value = toChinaDateISO(new Date());
+    updatePreviewImage(null);
+    updatePreviewText();
+    setStatus('等待保存');
+}
+
+function openUploadModal() {
+    uploadModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeUploadModal() {
+    uploadModal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
 function escapeHtml(value) {
     return String(value || '')
         .replace(/&/g, '&amp;')
@@ -76,30 +103,42 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
-function renderRecentEntries(entries) {
+function renderAlbumEntries(entries) {
     if (!entries.length) {
-        recentList.innerHTML = '<div class="recent-empty">这里会显示最近写入回忆墙的照片卡，双方登录后都能看到。</div>';
+        recentList.innerHTML = '<div class="photo-empty">还没有照片，点右下角上传第一张。</div>';
         return;
     }
 
     recentList.innerHTML = entries.map((entry) => `
-        <article class="recent-card">
-            <div class="recent-card-media">
-                <div class="recent-card-placeholder">加载中...</div>
-                <img data-src="${entry.imageUrl}" alt="${escapeHtml(entry.shotDate)}" loading="lazy" decoding="async" fetchpriority="auto">
+        <article class="photo-card">
+            <div class="photo-card-media">
+                <div class="photo-card-placeholder">加载中...</div>
+                <img data-src="${entry.imageUrl}" alt="${escapeHtml(entry.caption || entry.shotDate)}" loading="lazy" decoding="async" fetchpriority="auto">
             </div>
-            <div class="recent-card-date">${escapeHtml(entry.shotDate)}</div>
-            <div class="recent-card-caption">${escapeHtml(entry.caption)}</div>
+            <div class="photo-info">
+                <div class="photo-date">${escapeHtml(entry.shotDate)}</div>
+                <div class="photo-caption">${escapeHtml(entry.caption)}</div>
+            </div>
         </article>
     `).join('');
 
-    hydrateRecentImages();
+    hydrateAlbumImages();
 }
 
-function hydrateRecentImages() {
-    if (recentObserver) {
-        recentObserver.disconnect();
-    }
+function sortNewestFirst(entries) {
+    return [...entries].sort((a, b) => {
+        const dateCompare = String(b.shotDate || '').localeCompare(String(a.shotDate || ''));
+        if (dateCompare !== 0) return dateCompare;
+
+        const createdCompare = String(b.createdAt || '').localeCompare(String(a.createdAt || ''));
+        if (createdCompare !== 0) return createdCompare;
+
+        return String(b.id || '').localeCompare(String(a.id || ''));
+    });
+}
+
+function hydrateAlbumImages() {
+    if (imageObserver) imageObserver.disconnect();
 
     const reveal = (img) => {
         img.classList.add('is-loaded');
@@ -107,13 +146,13 @@ function hydrateRecentImages() {
         if (placeholder) placeholder.classList.add('is-hidden');
     };
 
-    recentObserver = new IntersectionObserver((entries) => {
+    imageObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
             const img = entry.target;
             const src = img.dataset.src;
             if (!src) {
-                recentObserver.unobserve(img);
+                imageObserver.unobserve(img);
                 return;
             }
 
@@ -127,24 +166,24 @@ function hydrateRecentImages() {
                     placeholder.classList.remove('is-hidden');
                 }
             }, { once: true });
-            recentObserver.unobserve(img);
+            imageObserver.unobserve(img);
         });
-    }, { rootMargin: '360px 0px' });
+    }, { rootMargin: '420px 0px' });
 
     recentList.querySelectorAll('img[data-src]').forEach((img, index) => {
-        if (index < 2) {
-            img.setAttribute('fetchpriority', 'high');
-        }
-        recentObserver.observe(img);
+        if (index < 4) img.setAttribute('fetchpriority', 'high');
+        imageObserver.observe(img);
     });
 }
 
-async function loadRecentEntries() {
+async function loadAlbumEntries() {
+    recentList.innerHTML = '<div class="photo-empty">正在加载照片...</div>';
+
     try {
-        const entries = await fetchRecentMemoryEntries();
-        renderRecentEntries(entries);
+        const entries = await fetchMemoryAlbumEntries();
+        renderAlbumEntries(sortNewestFirst(entries));
     } catch (error) {
-        recentList.innerHTML = `<div class="recent-empty">最近回忆加载失败：${escapeHtml(error.message || '未知错误')}</div>`;
+        recentList.innerHTML = `<div class="photo-empty">照片加载失败：${escapeHtml(error.message || '未知错误')}</div>`;
     }
 }
 
@@ -162,14 +201,14 @@ async function ensureLogin() {
         loginHint.classList.remove('hidden');
         setStatus('当前未登录，正在返回主页...', 'is-error');
         setTimeout(() => {
-            window.location.href = '../../';
+            LoadingScreen.goTo('../../');
         }, 700);
         return false;
     }
 
     currentUserKey = deriveCurrentUserKey();
     currentAuthorName = Auth.getMyNickname() || 'Love Space 用户';
-    authorBadge.textContent = `当前贡献者：${currentAuthorName}`;
+    authorBadge.textContent = `当前上传：${currentAuthorName}`;
     return true;
 }
 
@@ -180,25 +219,24 @@ async function handleSubmit() {
     const maxFileSize = 2 * 1024 * 1024;
 
     if (!file) {
-        setStatus('先选择一张图片再保存。', 'is-error');
+        setStatus('先选择一张图片。', 'is-error');
         return;
     }
     if (file.size > maxFileSize) {
-        setStatus('图片不能超过 2MB，请先压缩后再上传。', 'is-error');
+        setStatus('图片不能超过 2MB。', 'is-error');
         return;
     }
     if (!shotDate) {
-        setStatus('请填写拍摄日期。', 'is-error');
+        setStatus('请选择照片时间。', 'is-error');
         return;
     }
     if (!caption) {
-        setStatus('请补上一句描述。', 'is-error');
+        setStatus('请写一句文案。', 'is-error');
         return;
     }
 
-    publishBtn.disabled = true;
-    refreshRecentBtn.disabled = true;
-    setStatus('正在上传图片并写入回忆墙...');
+    setUploadDisabled(true);
+    setStatus('正在保存...');
 
     try {
         const imagePath = await uploadMemoryAlbumImage(file, currentUserKey);
@@ -211,17 +249,14 @@ async function handleSubmit() {
             isPublished: true
         });
 
-        formEl.reset();
-        dateInput.value = new Date().toISOString().slice(0, 10);
-        updatePreviewImage(null);
-        updatePreviewText();
-        setStatus('上传成功，新的回忆卡已经写入。', 'is-success');
-        await loadRecentEntries();
+        resetUploadForm();
+        setStatus('保存成功。', 'is-success');
+        closeUploadModal();
+        await loadAlbumEntries();
     } catch (error) {
         setStatus(`保存失败：${error.message || '未知错误'}`, 'is-error');
     } finally {
-        publishBtn.disabled = false;
-        refreshRecentBtn.disabled = false;
+        setUploadDisabled(false);
     }
 }
 
@@ -232,24 +267,27 @@ function bindEvents() {
     dateInput.addEventListener('input', updatePreviewText);
     captionInput.addEventListener('input', updatePreviewText);
     publishBtn.addEventListener('click', handleSubmit);
-    refreshRecentBtn.addEventListener('click', loadRecentEntries);
+    openUploadBtn.addEventListener('click', openUploadModal);
+    floatingUploadBtn.addEventListener('click', openUploadModal);
+    closeUploadBtn.addEventListener('click', closeUploadModal);
+    modalBackdrop.addEventListener('click', closeUploadModal);
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeUploadModal();
+    });
 }
 
 async function init() {
     bindEvents();
-    dateInput.value = new Date().toISOString().slice(0, 10);
-    updatePreviewImage(null);
-    updatePreviewText();
+    resetUploadForm();
 
     const ready = await ensureLogin();
     if (!ready) return;
 
-    setStatus('等待保存');
-    await loadRecentEntries();
+    await loadAlbumEntries();
 }
 
 window.addEventListener('beforeunload', cleanupPreviewObjectUrl);
 
-init().catch((error) => {
+LoadingScreen.withLoading(init).catch((error) => {
     setStatus(`初始化失败：${error.message || '未知错误'}`, 'is-error');
 });

@@ -3,7 +3,7 @@
     --secondary-color: #ff758c;
     --bg-gradient-start: #ff9a9e;
     --bg-gradient-end: #fad0c4;
-    --chat-bg: rgba(255, 255, 255, 0.25);
+    --chat-bg: rgba(255, 238, 244, 0.72);
     --msg-user-bg: #ff7eb3;
     --msg-bot-bg: #ffffff;
     --text-color: #4a4a4a;
@@ -19,17 +19,22 @@
 }
 
 body {
+    width: 100%;
     height: 100vh;
+    height: 100dvh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+    background:
+        linear-gradient(180deg, rgba(255, 246, 250, 0.18), rgba(70, 48, 58, 0.24)),
+        url("../home/assets/background/fenshenGogo.jpg") center / cover no-repeat;
     overflow: hidden;
     position: relative;
 }
 
 /* Background Animation */
 .background-animation {
+    display: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -73,12 +78,12 @@ body {
     max-width: 450px;
     height: 90vh;
     /* Mobile friendly */
-    background: var(--chat-bg);
+    background: rgba(255, 246, 250, 0.38);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.48);
+    box-shadow: 0 8px 32px 0 rgba(70, 48, 58, 0.18);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -87,12 +92,50 @@ body {
 }
 
 @media (max-width: 480px) {
+    body {
+        display: block;
+        height: 100svh;
+        min-height: 100svh;
+        align-items: stretch;
+        justify-content: flex-start;
+    }
+
     .chat-container {
-        height: 100vh;
-        height: 100dvh;
+        height: 100svh;
+        min-height: 100svh;
         max-height: none;
         border-radius: 0;
-        width: 100%;
+        width: 100vw;
+        max-width: none;
+        border: 0;
+        box-shadow: none;
+        background: rgba(255, 246, 250, 0.26);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    .background-animation {
+        position: fixed;
+    }
+
+    .chat-header {
+        flex: 0 0 auto;
+        background: rgba(255, 246, 250, 0.58);
+    }
+
+    .chat-messages {
+        padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .input-area {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: var(--keyboard-offset, 0px);
+        z-index: 50;
+        background: rgba(255, 246, 250, 0.58);
+        box-shadow: 0 -12px 30px rgba(70, 48, 58, 0.14);
+        transform: translateZ(0);
     }
 }
 
@@ -108,8 +151,8 @@ body {
 
 /* Header */
 .chat-header {
-    padding: 15px 20px;
-    background: rgba(255, 255, 255, 0.8);
+    padding: 14px 20px;
+    background: rgba(255, 246, 250, 0.58);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -119,11 +162,13 @@ body {
 
 .avatar img,
 .avatar .avatar-emoji {
-    width: 45px;
-    height: 45px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     border: 2px solid white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(255, 94, 145, 0.18);
+    object-fit: cover;
+    display: block;
 }
 
 .avatar-emoji {
@@ -199,18 +244,24 @@ body {
 
 .message.user {
     align-self: flex-end;
-    background: var(--msg-user-bg);
+    background: rgba(255, 126, 179, 0.72);
     color: white;
     border-bottom-right-radius: 4px;
-    box-shadow: 0 4px 15px rgba(255, 126, 179, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    box-shadow: 0 8px 20px rgba(255, 126, 179, 0.24);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
 .message.bot {
     align-self: flex-start;
-    background: var(--msg-bot-bg);
+    background: rgba(255, 255, 255, 0.66);
     color: var(--text-color);
     border-bottom-left-radius: 4px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.62);
+    box-shadow: 0 8px 20px rgba(70, 48, 58, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
 .message.system-message {
@@ -221,7 +272,9 @@ body {
     font-size: 0.85rem;
     box-shadow: none;
     border: 1px dashed rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.44);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .time {
@@ -239,17 +292,19 @@ body {
 /* Input Area */
 .input-area {
     padding: 15px;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 246, 250, 0.58);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .input-wrapper {
     display: flex;
-    background: var(--input-bg);
+    background: rgba(255, 255, 255, 0.66);
     border-radius: 30px;
     padding: 5px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s;
+    min-width: 0;
 }
 
 .input-wrapper:focus-within {
@@ -259,6 +314,7 @@ body {
 
 input {
     flex: 1;
+    min-width: 0;
     border: none;
     background: transparent;
     padding: 12px 20px;
@@ -273,6 +329,7 @@ input {
     border: none;
     width: 45px;
     height: 45px;
+    flex: 0 0 45px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;

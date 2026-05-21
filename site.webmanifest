@@ -1,0 +1,23 @@
+{
+  "name": "Gigo",
+  "short_name": "Gigo",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6edf3",
+  "theme_color": "#f6edf3",
+  "icons": [
+    {
+      "src": "./apps/home/assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./apps/home/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

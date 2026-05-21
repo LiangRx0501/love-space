@@ -3,47 +3,106 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>布布的幸运小转盘</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Gigo 转盘</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../home/assets/icons/favicon-32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../home/assets/icons/apple-touch-icon.png">
+    <link rel="stylesheet" href="../load/loading.css?v=load-4">
+    <link rel="stylesheet" href="style.css?v=wheel-default-7">
+    <script type="module" src="../load/boot.js?v=load-4"></script>
 </head>
 
 <body>
-    <a href="../../" class="back-home-btn" title="返回主页" aria-label="返回主页">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+    <a href="../../" class="home-button" title="返回主页" aria-label="返回主页">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="currentColor" aria-hidden="true">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
         </svg>
     </a>
 
     <main class="wheel-page">
-        <div class="ambient ambient-left"></div>
-        <div class="ambient ambient-right"></div>
-
-        <section class="wheel-panel">
-            <p class="eyebrow">Lucky Wheel</p>
-            <h1>布布的幸运小转盘</h1>
-            <p class="subtitle">点击转盘开始。每次都会随机停在 12 个彩色扇区中的一个。</p>
-
-            <div class="wheel-stage">
-                <div class="pointer" aria-hidden="true"></div>
-
-                <button id="wheel-button" class="wheel-button" type="button" aria-label="开始转动转盘">
-                    <div id="wheel" class="wheel-face">
-                        <div class="wheel-center">
-                            <span class="wheel-center-label">biu我</span>
-                        </div>
-                    </div>
+        <section class="wheel-card">
+            <div class="wheel-title-row">
+                <div>
+                    <p class="eyebrow">Lucky Wheel</p>
+                    <h1>布布的幸运小转盘</h1>
+                </div>
+                <button id="open-editor" class="tool-button" type="button" aria-label="自定义转盘">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                    </svg>
+                    <span>自定义</span>
                 </button>
             </div>
 
-            <div class="wheel-footer">
-                <div id="spin-status" class="spin-status">等待结果</div>
-                <button id="spin-action" class="spin-action" type="button">旋转一次</button>
+            <div class="wheel-copy">
+                先设置格子数量，再给每一格写上内容。点中间或下面按钮都可以开始。
             </div>
+
+            <div class="wheel-stage" aria-live="polite">
+                <div class="wheel-pointer" aria-hidden="true"></div>
+                <button id="wheel-button" class="wheel-button" type="button" aria-label="旋转转盘">
+                    <div id="wheel-disc" class="wheel-disc">
+                        <canvas id="wheel-canvas" aria-hidden="true"></canvas>
+                    </div>
+                    <span class="wheel-center">
+                        <video id="center-video" class="center-video" poster="assets/center-biu-poster.png" muted loop
+                            playsinline preload="auto">
+                            <source src="assets/center-biu.webm" type="video/webm">
+                            <source src="assets/center-biu.mp4" type="video/mp4">
+                        </video>
+                    </span>
+                </button>
+            </div>
+
+            <div class="result-card">
+                <span class="result-label">结果</span>
+                <strong id="spin-status">等待一二决定</strong>
+            </div>
+
+            <button id="spin-action" class="spin-button" type="button">转一下</button>
         </section>
     </main>
 
-    <script src="wheel.js"></script>
+    <div id="editor-modal" class="editor-modal hidden" aria-hidden="true">
+        <div class="editor-backdrop" data-close-editor></div>
+        <section class="editor-sheet" role="dialog" aria-modal="true" aria-labelledby="editor-title">
+            <div class="sheet-handle"></div>
+            <header class="editor-header">
+                <div>
+                    <p class="eyebrow">Customize</p>
+                    <h2 id="editor-title">自定义转盘</h2>
+                </div>
+                <button class="icon-button" type="button" data-close-editor aria-label="关闭">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" aria-hidden="true">
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                    </svg>
+                </button>
+            </header>
+
+            <div class="count-editor">
+                <span>格子数量</span>
+                <div class="count-controls">
+                    <button type="button" id="count-minus" aria-label="减少格子">-</button>
+                    <output id="segment-count">8</output>
+                    <button type="button" id="count-plus" aria-label="增加格子">+</button>
+                </div>
+            </div>
+
+            <div id="segment-editor" class="segment-editor"></div>
+
+            <div class="editor-actions">
+                <button id="reset-wheel" class="secondary-button" type="button">恢复默认</button>
+                <button class="done-button" type="button" data-close-editor>完成</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="wheel.js?v=wheel-default-7"></script>
 </body>
 
 </html>
